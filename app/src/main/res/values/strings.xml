@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">WhatsApp</string>
+    <string name="app_tabLeft">Chats</string>
+    <string name="app_tabMiddle">Status</string>
+    <string name="app_tabRight">Calls</string>
+</resources>
