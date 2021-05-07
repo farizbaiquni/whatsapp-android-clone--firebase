@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolBarTop"
+    android:id="@+id/toolbar_top"
     app:title="@string/app_name"
     app:titleTextColor="@color/colorWhite"
     android:background="@color/colorToolBar">
