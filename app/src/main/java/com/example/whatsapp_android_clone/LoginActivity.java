@@ -41,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         createAccoutEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, SignUpEmailActivity.class);
-                startActivity(intent);
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(i);
             }
         });
 
@@ -50,13 +50,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String email = emailLogin.getText().toString();
-                String password = emailLogin.getText().toString();
+                String password = passwordLogin.getText().toString();
 
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
+                                    emailLogin.setText(null);
+                                    passwordLogin.setText(null);
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                 } else {

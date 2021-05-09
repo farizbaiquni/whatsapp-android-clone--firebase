@@ -31,6 +31,7 @@ public class SignUpEmailActivity extends AppCompatActivity {
         textViewAlreadyHaveAccount = findViewById(R.id.text_view_login);
         editTextEmailSignUp = findViewById(R.id.edit_text_email_signUp);
         editTextPasswordSignUp = findViewById(R.id.edit_text_password_signUp);
+        buttonCreateAccount = findViewById(R.id.button_create_account_email);
 
         textViewAlreadyHaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,30 +51,19 @@ public class SignUpEmailActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
+                                    editTextEmailSignUp.setText(null);
+                                    editTextPasswordSignUp.setText(null);
                                     // Sign in success, update UI with the signed-in user's information
                                     Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
                                     startActivity(intent);
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Toast.makeText(SignUpEmailActivity.this, "Failed craate account", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignUpEmailActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(SignUpEmailActivity.this, "Failed craate account", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             };
         });
-
-//        @Override
-//        public void onComplete(@NonNull Task<AuthResult> task) {
-//            if (task.isSuccessful()) {
-//                // Sign in success, update UI with the signed-in user's information
-////                                    Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
-////                                    startActivity(intent);
-//            } else {
-//                // If sign in fails, display a message to the user.
-////                                    Toast.makeText(SignUpEmailActivity.this, "Failed craate account", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-
-
-    } //OnCreate
+    }
 }

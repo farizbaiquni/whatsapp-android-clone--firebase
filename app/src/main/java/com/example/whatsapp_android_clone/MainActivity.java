@@ -1,9 +1,15 @@
 package com.example.whatsapp_android_clone;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -73,9 +79,30 @@ public class MainActivity extends AppCompatActivity {
 
         curentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(curentUser == null){
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+//        if(curentUser == null){
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_find_friends:
+                Toast.makeText(this, "Find Frinds", Toast.LENGTH_SHORT).show();
+            case R.id.menu_setting:
+                Toast.makeText(this, "Setting", Toast.LENGTH_SHORT).show();
+            case R.id.menu_logout:
+                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
