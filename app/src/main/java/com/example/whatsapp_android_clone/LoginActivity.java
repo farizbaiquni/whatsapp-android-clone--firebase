@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         createAccoutEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                Intent i = new Intent(LoginActivity.this, SignUpEmailActivity.class);
                 startActivity(i);
             }
         });

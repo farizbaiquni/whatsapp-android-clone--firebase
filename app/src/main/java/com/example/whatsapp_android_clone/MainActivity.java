@@ -19,6 +19,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         curentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if(curentUser == null){
-            Intent intent = new Intent(this, SettingActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
     }
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //Context menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -103,15 +106,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menu_find_friends:
-                Toast.makeText(this, "Find Frinds", Toast.LENGTH_SHORT).show();
+            case R.id.menu_new_group:
+                BottomSheetCreateGroup bottomSheetCreateGroup = new BottomSheetCreateGroup();
+                bottomSheetCreateGroup.show(getSupportFragmentManager(), "SHOW");
                 return true;
             case R.id.menu_setting:
                 Intent intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.menu_logout:
-                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                Intent intentLogOut = new Intent(this, LoginActivity.class);
+                startActivity(intentLogOut);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

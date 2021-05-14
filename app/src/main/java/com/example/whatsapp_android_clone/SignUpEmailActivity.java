@@ -12,16 +12,36 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class SignUpEmailActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseFirestore firestoreDb;
+    private FirebaseDatabase realtimeDb;
+    private DatabaseReference realtimeReference;
+
     private Button buttonCreateAccount;
     private TextView textViewAlreadyHaveAccount;
-    private EditText editTextEmailSignUp, editTextPasswordSignUp;
+    private EditText editTextEmailSignUp, editTextPasswordSignUp, editTextUsernameSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +52,14 @@ public class SignUpEmailActivity extends AppCompatActivity {
         editTextEmailSignUp = findViewById(R.id.edit_text_email_signUp);
         editTextPasswordSignUp = findViewById(R.id.edit_text_password_signUp);
         buttonCreateAccount = findViewById(R.id.button_create_account_email);
+        editTextUsernameSignUp = findViewById(R.id.edit_text_username_signUp);
+
+        mAuth = FirebaseAuth.getInstance();
+        firestoreDb = FirebaseFirestore.getInstance();
+        realtimeDb = FirebaseDatabase.getInstance();
+        realtimeReference = realtimeDb.getReference("users");
+
+
 
         textViewAlreadyHaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,26 +72,82 @@ public class SignUpEmailActivity extends AppCompatActivity {
         buttonCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String email = editTextEmailSignUp.getText().toString();
                 String password = editTextPasswordSignUp.getText().toString();
+                final String username = editTextUsernameSignUp.getText().toString();
+
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(SignUpEmailActivity.this, new OnCompleteListener<AuthResult>() {
+
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
+                                    editTextUsernameSignUp.setText(null);
                                     editTextEmailSignUp.setText(null);
                                     editTextPasswordSignUp.setText(null);
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
-                                    startActivity(intent);
+
+                                    currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+                                    //UPDATE DISPLAY NAME CURRENT USER
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(username)
+                                            .build();
+
+
+                                    currentUser.updateProfile(profileUpdates)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                    Map<String, Object> user = new HashMap<>();
+                                                    user.put("uid",currentUser.getUid());
+                                                    user.put("username", currentUser.getDisplayName() );
+                                                    user.put("email", currentUser.getEmail() );
+                                                    user.put("phone", "" );
+                                                    user.put("groups", Arrays.asList());
+                                                    user.put("contacts", Arrays.asList(1, 2, 3));
+                                                    user.put("create_at", new Timestamp(new Date()));;
+
+                                                    Map<String, Object> userr = new HashMap<>();
+                                                    userr.put("uid",currentUser.getUid());
+                                                    userr.put("username", username );
+                                                    userr.put("email", email );
+                                                    userr.put("phone", "" );
+
+                                                    //REALTIME DATABASE
+                                                    realtimeReference.setValue(userr);
+
+                                                    //FIRESTORE DATABASE
+                                                    firestoreDb.collection("users")
+                                                            .add(user)
+                                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                @Override
+                                                                public void onSuccess(DocumentReference documentReference) {
+                                                                    Toast.makeText(SignUpEmailActivity.this, "Firestore Sukses", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
+                                                                    startActivity(intent);
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Toast.makeText(SignUpEmailActivity.this, "Firestore Gagal", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+
+                                                }
+                                            });
+
+                                //ELSE CREATE ACCOUNT EMAIL AND PASSWORD
                                 } else {
-                                    // If sign in fails, display a message to the user.
                                     Toast.makeText(SignUpEmailActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
-//                                    Toast.makeText(SignUpEmailActivity.this, "Failed craate account", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             };
         });
+
+
     }
 }

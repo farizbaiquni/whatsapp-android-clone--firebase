@@ -18,13 +18,23 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/whatsapp_icon"
                 android:layout_gravity="center_horizontal"
                 android:scaleType="fitCenter"/>
+
+            <EditText
+                android:id="@+id/edit_text_username_signUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:inputType="textEmailAddress"
+                android:hint="Username"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"/>
 
             <EditText
                 android:id="@+id/edit_text_email_signUp"

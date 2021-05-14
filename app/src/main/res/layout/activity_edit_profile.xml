@@ -11,20 +11,120 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Photo Profile-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content"
+            android:gravity="center">
             <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/image_profile_setting_menu"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/whatsapp_icon"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:src="@drawable/friends"
                 app:civ_border_width="0dp"
                 app:civ_border_color="#FF000000"
                 android:layout_margin="30dp"/>
+        </LinearLayout>
 
+        <!-- Edit Name-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="20dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:alpha="0.5"
+                android:src="@drawable/friends"
+                android:layout_margin="20dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginRight="15dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Name"/>
+                <EditText
+                    android:id="@+id/edit_text_edit_profil_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:text="Username"
+                    android:paddingLeft="-1dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/usernane_description"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Edit About-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="20dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:alpha="0.5"
+                android:src="@drawable/chat"
+                android:layout_margin="20dp"
+                android:layout_gravity="center_vertical"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="About"/>
+                <EditText
+                    android:id="@+id/edit_text_edit_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:text="About user"
+                    android:paddingLeft="-1dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Edit Phone-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="20dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:alpha="0.5"
+                android:src="@drawable/notification"
+                android:layout_margin="20dp"
+                android:layout_gravity="center_vertical"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Phone"/>
+                <EditText
+                    android:inputType="number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:text="082416165165"
+                    android:paddingLeft="-1dp" />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

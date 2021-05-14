@@ -1,6 +1,7 @@
 package com.example.whatsapp_android_clone;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,7 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ModelSettingMenu object = modelSettingMenus.get(position);
+        final ModelSettingMenu object = modelSettingMenus.get(position);
         if(object != null){
             switch (object.type){
                 case ModelSettingMenu.PROFILE_TYPE:
@@ -78,7 +79,10 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
                     ((ProfileViewHolder) holder).relativeLayoutProfileLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(context, "CLICK PROFILE MENU", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, EditProfileActivity.class);
+                            intent.putExtra("username", object.title);
+                            intent.putExtra("description", object.description);
+                            context.startActivity(intent);
                         }
                     });
                     break;
