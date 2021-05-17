@@ -26,6 +26,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,9 +49,8 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.viewPager2);
 
-        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
         databaseListener.getUserInformation();
 
         //Toolbar

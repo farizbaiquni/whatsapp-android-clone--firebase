@@ -1,6 +1,7 @@
 package com.example.whatsapp_android_clone;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,9 @@ public class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Settings");
 
         settingRecyclerView = findViewById(R.id.recycler_view_setting);
 

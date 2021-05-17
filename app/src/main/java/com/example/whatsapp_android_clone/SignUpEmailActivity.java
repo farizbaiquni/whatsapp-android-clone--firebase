@@ -105,6 +105,7 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                                     user.put("description", "");
                                                     user.put("email", currentUser.getEmail());
                                                     user.put("phone", "" );
+                                                    user.put("photoProfile", "");
                                                     user.put("groups", Arrays.asList());
                                                     user.put("contacts", Arrays.asList(1, 2, 3));
                                                     user.put("create_at", new Timestamp(new Date()));;
