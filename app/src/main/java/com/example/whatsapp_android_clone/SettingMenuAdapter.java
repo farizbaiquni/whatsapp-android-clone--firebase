@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -72,7 +74,11 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
             switch (object.type){
                 case ModelSettingMenu.PROFILE_TYPE:
                     ProfileViewHolder profileViewHolder = (ProfileViewHolder) holder;
-                    profileViewHolder.circleImageViewImageProfile.setImageResource(object.image);
+                    try {
+                        Picasso.get().load(object.photoProfile).into(profileViewHolder.circleImageViewImageProfile);
+                    } catch (Exception e){
+                        profileViewHolder.circleImageViewImageProfile.setImageResource(R.drawable.friends);
+                    }
                     profileViewHolder.textViewUsernameProfile.setText(object.title);
                     profileViewHolder.textViewDescriptionProfile.setText(object.description);
                     profileViewHolder.imageViewBarcodeProfile.setImageResource(object.barcode);
@@ -80,8 +86,6 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(context, EditProfileActivity.class);
-                            intent.putExtra("username", object.title);
-                            intent.putExtra("description", object.description);
                             context.startActivity(intent);
                         }
                     });

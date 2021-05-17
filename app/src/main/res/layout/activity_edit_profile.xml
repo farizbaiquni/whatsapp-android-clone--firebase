@@ -33,8 +33,8 @@
             android:orientation="horizontal"
             android:paddingVertical="20dp">
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:alpha="0.5"
                 android:src="@drawable/friends"
                 android:layout_margin="20dp"/>
@@ -68,8 +68,8 @@
             android:orientation="horizontal"
             android:paddingVertical="20dp">
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:alpha="0.5"
                 android:src="@drawable/chat"
                 android:layout_margin="20dp"
@@ -101,8 +101,8 @@
             android:orientation="horizontal"
             android:paddingVertical="20dp">
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:alpha="0.5"
                 android:src="@drawable/notification"
                 android:layout_margin="20dp"

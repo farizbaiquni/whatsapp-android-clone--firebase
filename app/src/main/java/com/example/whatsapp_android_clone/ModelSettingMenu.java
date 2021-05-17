@@ -10,14 +10,16 @@ public class ModelSettingMenu {
     public int image;
     public int barcode;
     public String title, description;
+    public String photoProfile;
 
-    public ModelSettingMenu (int type, int image, String title, String description, int barcode) {
+    public ModelSettingMenu (int type, int image, String title, String description, int barcode, String photoProfile){
         this.type = type;
         this.image = image;
         this.barcode = barcode;
         this.title = title;
         this.description = description;
         this.barcode = barcode;
+        this.photoProfile = photoProfile;
     }
 
 }

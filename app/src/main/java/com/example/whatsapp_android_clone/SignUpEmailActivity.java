@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -35,8 +34,8 @@ public class SignUpEmailActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private FirebaseFirestore firestoreDb;
-    private FirebaseDatabase realtimeDb;
+    private FirebaseFirestore firestoreDatabase;
+    private FirebaseDatabase realtimeDatabase;
     private DatabaseReference realtimeReference;
 
     private Button buttonCreateAccount;
@@ -55,9 +54,9 @@ public class SignUpEmailActivity extends AppCompatActivity {
         editTextUsernameSignUp = findViewById(R.id.edit_text_username_signUp);
 
         mAuth = FirebaseAuth.getInstance();
-        firestoreDb = FirebaseFirestore.getInstance();
-        realtimeDb = FirebaseDatabase.getInstance();
-        realtimeReference = realtimeDb.getReference("users");
+        firestoreDatabase = FirebaseFirestore.getInstance();
+        realtimeDatabase = FirebaseDatabase.getInstance();
+        realtimeReference = realtimeDatabase.getReference("users");
 
 
 
@@ -102,8 +101,9 @@ public class SignUpEmailActivity extends AppCompatActivity {
 
                                                     Map<String, Object> user = new HashMap<>();
                                                     user.put("uid",currentUser.getUid());
-                                                    user.put("username", currentUser.getDisplayName() );
-                                                    user.put("email", currentUser.getEmail() );
+                                                    user.put("username", currentUser.getDisplayName());
+                                                    user.put("description", "");
+                                                    user.put("email", currentUser.getEmail());
                                                     user.put("phone", "" );
                                                     user.put("groups", Arrays.asList());
                                                     user.put("contacts", Arrays.asList(1, 2, 3));
@@ -119,11 +119,12 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                                     realtimeReference.setValue(userr);
 
                                                     //FIRESTORE DATABASE
-                                                    firestoreDb.collection("users")
-                                                            .add(user)
-                                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                    firestoreDatabase.collection("users")
+                                                            .document(currentUser.getUid())
+                                                            .set(user)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
-                                                                public void onSuccess(DocumentReference documentReference) {
+                                                                public void onSuccess(Void aVoid) {
                                                                     Toast.makeText(SignUpEmailActivity.this, "Firestore Sukses", Toast.LENGTH_SHORT).show();
                                                                     Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
                                                                     startActivity(intent);
@@ -132,7 +133,7 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                                             .addOnFailureListener(new OnFailureListener() {
                                                                 @Override
                                                                 public void onFailure(@NonNull Exception e) {
-                                                                    Toast.makeText(SignUpEmailActivity.this, "Firestore Gagal", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(SignUpEmailActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                                                 }
                                                             });
 

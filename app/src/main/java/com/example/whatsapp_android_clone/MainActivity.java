@@ -12,24 +12,30 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseUser curentUser;
+    private FirebaseUser currentUser;
 
     private Toolbar toolBarTop;
     private TabLayout tabLayout;
     private ViewPager2 viewPager2;
     private TabsAdapter tabsAdapter;
+    private DatabaseListener databaseListener;
 
 
     @Override
@@ -37,10 +43,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Inisiasi
         toolBarTop = findViewById(R.id.toolbar_top);
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.viewPager2);
+
+        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        databaseListener.getUserInformation();
 
         //Toolbar
         setSupportActionBar(toolBarTop);
@@ -78,15 +88,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
+    } //End of onStart
+
+
+
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        curentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if(curentUser == null){
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null){
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
@@ -111,8 +122,14 @@ public class MainActivity extends AppCompatActivity {
                 bottomSheetCreateGroup.show(getSupportFragmentManager(), "SHOW");
                 return true;
             case R.id.menu_setting:
-                Intent intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                if(databaseListener.isUserInFirestoreExist == false){
+                    Toast.makeText(this, "User in firebase not found", Toast.LENGTH_SHORT).show();
+                } else if(databaseListener.isErrorOccuredDuringFetchUser == true){
+                    Toast.makeText(this, "Error during getting data from firestore", Toast.LENGTH_SHORT).show();
+                } else {
+                    startActivity(intent);
+                }
                 return true;
             case R.id.menu_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -123,4 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-}
+
+
+
+} //End of MainActivity class
