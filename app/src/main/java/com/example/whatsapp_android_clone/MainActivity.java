@@ -15,8 +15,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,8 +48,16 @@ public class MainActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.viewPager2);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
-        databaseListener.getUserInformation();
+        //Check is user loggeed in or not, to avoid null exception
+        databaseListener.checkIsUserLoggedIn();
+        databaseListener.getLoggedUser().observe(MainActivity.this, loggedUser -> {
+            if(loggedUser != null){
+                databaseListener.getUserInformation(loggedUser.getUid());
+            }
+        });
+
 
         //Toolbar
         setSupportActionBar(toolBarTop);

@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:background="@color/colorToolBar"
             app:tabTextColor="@color/colorWhite"
-            android:layout_below="@+id/toolbar_top">
+            android:layout_below="@+id/toolbar_top"
+            app:tabIndicatorColor="@color/colorWhite">
 
         </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>

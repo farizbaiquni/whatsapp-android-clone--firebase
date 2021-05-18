@@ -50,7 +50,13 @@ public class SettingActivity extends AppCompatActivity {
 
         //View Model and Live Data to fetch user data from firestore sync / realtime
         databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
-        databaseListener.getUserInformation();
+        //Check is user loggeed in or not, to avoid null exception
+        databaseListener.checkIsUserLoggedIn();
+        databaseListener.getLoggedUser().observe(SettingActivity.this, loggedUser -> {
+            if(loggedUser != null){
+                databaseListener.getUserInformation(loggedUser.getUid());
+            }
+        });
 
         //Updating profile layout based on user data in firestore and updating if there's a change
         databaseListener.getUsername().observe(SettingActivity.this, data -> {

@@ -30,6 +30,7 @@ public class BottomSheetCreateGroup extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.bottom_sheet_create_group, container, false);
         editTextGroupName = view.findViewById(R.id.edit_text_group_name);
         editTextGroupName.requestFocus();
+        editTextGroupName.setSelectAllOnFocus(true);
         return view;
     }
 }

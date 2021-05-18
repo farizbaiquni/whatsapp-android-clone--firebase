@@ -37,10 +37,21 @@ public class DatabaseListener extends ViewModel {
         return photoProfile;
     }
 
+    private MutableLiveData<FirebaseUser> loggedUser = new MutableLiveData<>(null);
+    public MutableLiveData<FirebaseUser> getLoggedUser(){
+        return loggedUser;
+    }
+
+    public void checkIsUserLoggedIn(){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            loggedUser.setValue(currentUser);
+        }
+    }
 
     //Get user information from firestore
-    public void getUserInformation(){
-        final DocumentReference docRef = firestoreDatabase.collection("users").document(currentUser.getUid());
+    public void getUserInformation(String userId){
+        final DocumentReference docRef = firestoreDatabase.collection("users").document(userId);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot,
