@@ -16,9 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
@@ -35,16 +34,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private EditText editTextUsername, editTextDescription;
+    private TextView textViewUsername;
+    private EditText editTextDescription;
     private CircleImageView circleImageViewPhotoProfile;
 
     private FirebaseUser currentUser;
@@ -56,6 +51,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private final int READ_EXTERNAL_STORAGE_CODE = 100;
 
     private Uri uriPhotoProfileUploaded;
+    private String currentUsernameUser;
 
 
     @Override
@@ -77,7 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
         storagePhotoProfileReference = firebaseStorage.getReference().child("photoProfile").child(currentUser.getUid());
 
 
-        editTextUsername = findViewById(R.id.edit_text_edit_profil_name);
+        textViewUsername = findViewById(R.id.text_view_edit_profil_name);
         editTextDescription = findViewById(R.id.edit_text_edit_description);
         circleImageViewPhotoProfile = findViewById(R.id.image_profile_setting_menu);
 
@@ -94,7 +90,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         //Updating profile layout based on user data in firestore and updating if there's a change
         databaseListener.getUsername().observe(EditProfileActivity.this, username -> {
-            editTextUsername.setText(username);
+            textViewUsername.setText(username);
+            currentUsernameUser = username;
         });
 
         databaseListener.getDescription().observe(EditProfileActivity.this, description -> {
@@ -106,6 +103,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 Picasso.get().load(photoProfile).into(circleImageViewPhotoProfile);
             } catch (Exception e){
                 circleImageViewPhotoProfile.setImageResource(R.drawable.friends);
+            }
+        });
+
+        textViewUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BottomSheetEditUsername bottomSheetEditUsername = new BottomSheetEditUsername(currentUsernameUser, currentUser.getUid());
+                bottomSheetEditUsername.show(getSupportFragmentManager(), "Show edit username");
             }
         });
 

@@ -17,7 +17,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Group name"
+                android:text="Enter your name"
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"/>
 
@@ -27,16 +27,17 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_group_name"
+                    android:id="@+id/edit_text_edit_username_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@android:color/transparent"
-                    android:hint="Group name"
-                    android:maxLength="25"/>
+                    android:hint="Your name..."
+                    android:maxLength="25"
+                    android:selectAllOnFocus="true"/>
 
                 <TextView
-                    android:id="@+id/text_view_grouo_count_text"
+                    android:id="@+id/text_view_edit_username_count_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="number"
@@ -44,7 +45,6 @@
             </LinearLayout>
 
             <View
-                android:layout_below="@+id/card_view_profile_setting_menu"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/colorWhatsAppDarkGreen" />
@@ -56,7 +56,7 @@
                 android:layout_marginTop="20dp">
 
                 <TextView
-                    android:id="@+id/text_view_group_cancel"
+                    android:id="@+id/text_view_edit_username_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="cancel"
@@ -65,7 +65,7 @@
                     android:textColor="@color/colorWhatsAppDarkGreen"/>
 
                 <TextView
-                    android:id="@+id/text_view_group_save"
+                    android:id="@+id/text_view_edit_username_save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="save"

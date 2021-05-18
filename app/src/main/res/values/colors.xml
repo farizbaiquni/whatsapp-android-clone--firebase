@@ -8,4 +8,6 @@
     <color name="colorWhatsAppDarkGreen">#128C7E</color>
     <color name="colorWhatsAppLightGreen">#25D366</color>
     <color name="colorWhatsAppLightestGreen">#DCF8C6</color>
+    <color name="colorTextDark">#1C2833</color>
+    <color name="colorTextGray">#808B96</color>
 </resources>
