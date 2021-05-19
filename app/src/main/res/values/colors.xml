@@ -5,6 +5,7 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorToolBar">#075E54</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhatsAppNotificationBar">#064C44</color>
     <color name="colorWhatsAppDarkGreen">#128C7E</color>
     <color name="colorWhatsAppLightGreen">#25D366</color>
     <color name="colorWhatsAppLightestGreen">#DCF8C6</color>

@@ -52,7 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Username"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@color/colorTextDark"
                     android:textSize="19sp"
                     android:paddingLeft="-1dp" />
                 <TextView

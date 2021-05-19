@@ -3,7 +3,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorToolBar</item>
-        <item name="colorPrimaryDark">@color/colorWhatsAppDarkGreen</item>
+        <item name="colorPrimaryDark">@color/colorWhatsAppNotificationBar</item>
         <item name="colorAccent">@color/colorWhatsAppLightGreen</item>
         <item name="android:textColorSecondary">@color/colorWhite</item>
     </style>
@@ -11,7 +11,7 @@
     <style name="AppThemeWhatsApp" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorToolBar</item>
-        <item name="colorPrimaryDark">@color/colorWhatsAppDarkGreen</item>
+        <item name="colorPrimaryDark">@color/colorWhatsAppNotificationBar</item>
         <item name="colorAccent">@color/colorWhatsAppLightGreen</item>
         <item name="android:textColorSecondary">@color/colorWhite</item>
     </style>

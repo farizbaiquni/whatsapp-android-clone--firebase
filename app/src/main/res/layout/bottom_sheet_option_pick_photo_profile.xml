@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -11,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="50dp"
-            android:paddingHorizontal="20dp"
+            android:paddingHorizontal="15dp"
             android:orientation="vertical">
 
             <TextView
@@ -27,30 +28,74 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:orientation="horizontal"
-               android:paddingHorizontal="20dp"
+               android:paddingHorizontal="10dp"
                android:paddingVertical="10dp">
 
                <LinearLayout
+                   android:id="@+id/remove_photo_option_change_photo_profile"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:orientation="vertical">
-
+                   android:orientation="vertical"
+                   android:layout_marginRight="20dp">
                    <de.hdodenhof.circleimageview.CircleImageView
-                       android:id="@+id/image_profile_setting_menu"
-                       android:layout_width="70dp"
-                       android:layout_height="70dp"
-                       android:src="@drawable/friends"
+                       android:id="@+id/sensei"
+                       android:layout_width="45dp"
+                       android:layout_height="45dp"
+                       android:src="@drawable/delete"
                        android:layout_gravity="center_horizontal"/>
                    <TextView
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
+                       android:maxWidth="50dp"
+                       android:textAlignment="center"
                        android:text="Remove Photo"
                        android:textColor="@color/colorTextGray"
-                       android:textSize="17sp"
+                       android:textSize="13sp"
                        android:layout_gravity="center_horizontal"/>
                </LinearLayout>
 
+               <LinearLayout
+                   android:id="@+id/gallery_option_change_photo_profile"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical"
+                   android:layout_marginRight="20dp">
+                   <de.hdodenhof.circleimageview.CircleImageView
+                       android:layout_width="45dp"
+                       android:layout_height="45dp"
+                       android:src="@drawable/gallery"
+                       android:layout_gravity="center_horizontal"/>
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:maxWidth="70dp"
+                       android:textAlignment="center"
+                       android:text="Gallery"
+                       android:textColor="@color/colorTextGray"
+                       android:textSize="13sp"
+                       android:layout_gravity="center_horizontal"/>
+               </LinearLayout>
 
+               <LinearLayout
+                   android:id="@+id/camera_option_change_photo_profile"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
+                   <de.hdodenhof.circleimageview.CircleImageView
+                       android:layout_width="45dp"
+                       android:layout_height="45dp"
+                       android:src="@drawable/camera"
+                       android:layout_gravity="center_horizontal"/>
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:maxWidth="70dp"
+                       android:textAlignment="center"
+                       android:text="Camera"
+                       android:textColor="@color/colorTextGray"
+                       android:textSize="13sp"
+                       android:layout_gravity="center_horizontal"/>
+               </LinearLayout>
 
            </LinearLayout>
 
