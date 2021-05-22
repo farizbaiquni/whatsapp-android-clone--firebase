@@ -106,18 +106,8 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                                     user.put("email", currentUser.getEmail());
                                                     user.put("phone", "" );
                                                     user.put("photoProfile", "");
-                                                    user.put("groups", Arrays.asList());
-                                                    user.put("contacts", Arrays.asList(1, 2, 3));
-                                                    user.put("create_at", new Timestamp(new Date()));;
-
-                                                    Map<String, Object> userr = new HashMap<>();
-                                                    userr.put("uid",currentUser.getUid());
-                                                    userr.put("username", username );
-                                                    userr.put("email", email );
-                                                    userr.put("phone", "" );
-
-                                                    //REALTIME DATABASE
-                                                    realtimeReference.setValue(userr);
+                                                    user.put("rooms", Arrays.asList());
+                                                    user.put("dateCreated", new Timestamp(new Date()));;
 
                                                     //FIRESTORE DATABASE
                                                     firestoreDatabase.collection("users")
@@ -126,7 +116,6 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
-                                                                    Toast.makeText(SignUpEmailActivity.this, "Firestore Sukses", Toast.LENGTH_SHORT).show();
                                                                     Intent intent = new Intent(SignUpEmailActivity.this, MainActivity.class);
                                                                     startActivity(intent);
                                                                 }

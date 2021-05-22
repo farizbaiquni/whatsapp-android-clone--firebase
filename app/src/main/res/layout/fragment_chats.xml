@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ChatsFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -11,5 +12,18 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="Chats Fragment" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_select_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        android:layout_gravity="end|bottom"
+        android:backgroundTint="@color/colorWhatsAppLightGreen"
+        android:tintMode="@color/colorWhite"
+        android:src="@drawable/ic_message_24"
+        android:contentDescription="Select Contact"
+        android:layout_margin="16dp" />
+
 
 </FrameLayout>

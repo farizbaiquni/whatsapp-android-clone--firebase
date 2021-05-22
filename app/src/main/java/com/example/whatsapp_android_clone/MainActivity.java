@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    } //End of onStart
+    } //End of onCreate
 
 
 
@@ -122,9 +122,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_setting:
                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                if(databaseListener.isUserInFirestoreExist == false){
+                if(!databaseListener.isUserInFirestoreExist){
                     Toast.makeText(this, "User in firebase not found", Toast.LENGTH_SHORT).show();
-                } else if(databaseListener.isErrorOccuredDuringFetchUser == true){
+                } else if(databaseListener.isErrorOccuredDuringFetchUser){
                     Toast.makeText(this, "Error during getting data from firestore", Toast.LENGTH_SHORT).show();
                 } else {
                     startActivity(intent);

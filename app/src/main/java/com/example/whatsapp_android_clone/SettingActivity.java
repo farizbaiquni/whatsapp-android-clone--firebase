@@ -1,20 +1,11 @@
 package com.example.whatsapp_android_clone;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
-import android.util.Log;
-
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,31 +51,19 @@ public class SettingActivity extends AppCompatActivity {
 
         //Updating profile layout based on user data in firestore and updating if there's a change
         databaseListener.getUsername().observe(SettingActivity.this, data -> {
-            prevUsername = username;
             username = data;
-            if(prevUsername != username){
-                modelSettingMenus.clear();
-            }
             callSetAdapterSettingMenu(username, description, photoProfile);
         });
 
 
         databaseListener.getDescription().observe(SettingActivity.this, data -> {
-            prevDescription = description;
             description = data;
-            if(prevDescription != description){
-                modelSettingMenus.clear();
-            }
             callSetAdapterSettingMenu(username, description, photoProfile);
         });
 
 
         databaseListener.getPhotoProfile().observe(SettingActivity.this, data -> {
-            prevPhotoProfile = photoProfile;
             photoProfile = data;
-            if(photoProfile != prevPhotoProfile){
-                modelSettingMenus.clear();
-            }
             callSetAdapterSettingMenu(username, description, photoProfile);
         });
 
@@ -94,6 +73,7 @@ public class SettingActivity extends AppCompatActivity {
 
 
     private void callSetAdapterSettingMenu(String username, String description, String photoProfile){
+        modelSettingMenus.clear();
 
         //PROFILE
         modelSettingMenus.add(new ModelSettingMenu(ModelSettingMenu.PROFILE_TYPE,

@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorToolBar</item>
         <item name="colorPrimaryDark">@color/colorWhatsAppNotificationBar</item>
@@ -8,13 +8,17 @@
         <item name="android:textColorSecondary">@color/colorWhite</item>
     </style>
 
-    <style name="AppThemeWhatsApp" parent="Theme.AppCompat.Light.DarkActionBar">
+
+    <style name="AppThemeWhatsApp" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorToolBar</item>
         <item name="colorPrimaryDark">@color/colorWhatsAppNotificationBar</item>
         <item name="colorAccent">@color/colorWhatsAppLightGreen</item>
         <item name="android:textColorSecondary">@color/colorWhite</item>
+        <item name="actionMenuTextColor">@color/colorWhite</item>
+        <item name="android:actionMenuTextColor">@color/colorWhite</item>
     </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
