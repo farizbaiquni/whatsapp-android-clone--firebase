@@ -16,11 +16,11 @@ public class SettingActivity extends AppCompatActivity {
     private RecyclerView settingRecyclerView;
     private SettingMenuAdapter settingMenuAdapter;
     private String username ="No Connection...", description = "No Connection...", photoProfile = "";
-    private String prevUsername, prevDescription, prevPhotoProfile;
 
     private String settingMenuDesctiptions [], settingMenuNames[];
     private int settingMenuImages[] = {R.drawable.key, R.drawable.chat, R.drawable.notification,
             R.drawable.usage, R.drawable.help};
+
     List<ModelSettingMenu> modelSettingMenus = new ArrayList<>();
 
 

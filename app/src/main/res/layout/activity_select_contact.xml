@@ -92,9 +92,25 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_contact"
         android:layout_below="@+id/card_view_new_contact"
         android:layout_width="409dp"
         android:layout_height="729dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />
+
+<!--    DEBUGGING-->
+    <TextView
+        android:id="@+id/debug_contact"
+        android:layout_below="@+id/card_view_new_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar_select_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
 </RelativeLayout>

@@ -49,7 +49,7 @@
                     android:layout_below="@id/et_name_contact_add_contact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Check is user exist ?"
+                    android:text="Check User"
                     android:paddingHorizontal="10dp"/>
             </LinearLayout>
 
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:cardBackgroundColor="@android:color/transparent">
 
                 <LinearLayout
@@ -114,9 +114,9 @@
                 android:hint="Contact Name..."
                 android:layout_marginTop="10dp"
                 app:endIconMode="clear_text"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:visibility="gone"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                >
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_name_contact_add_contact"
                     android:layout_below="@id/et_email_add_contact"
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:text="Add Contact"
                     android:paddingHorizontal="10dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
             </LinearLayout>
 
 
@@ -156,7 +156,7 @@
                 android:textColor="@android:color/holo_red_dark"
                 android:alpha="0.5"
                 android:gravity="center_horizontal"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
 
 
         </LinearLayout>

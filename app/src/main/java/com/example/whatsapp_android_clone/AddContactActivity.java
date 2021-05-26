@@ -44,7 +44,8 @@ public class AddContactActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private FirebaseUser currentUser;
     private boolean isUserFound;
-    private String photoSearchedUser,
+    private String idSearchedUser,
+            photoSearchedUser,
             usernameSearchedUser,
             descriptionSearchedUser,
             emailSearchedUser;
@@ -55,6 +56,7 @@ public class AddContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
+        idSearchedUser = "";
         photoSearchedUser = "";
         usernameSearchedUser = "";
         descriptionSearchedUser = "";
@@ -81,6 +83,7 @@ public class AddContactActivity extends AppCompatActivity {
         buttonCheckIsUserExist.setOnClickListener(v -> {
 
             isUserFound = false;
+            idSearchedUser = "";
             photoSearchedUser = "";
             usernameSearchedUser = "";
             descriptionSearchedUser = "";
@@ -120,6 +123,7 @@ public class AddContactActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
 
+                                        idSearchedUser = document.getId().toString();
                                         photoSearchedUser = document.getData().get("photoProfile").toString();
                                         emailSearchedUser = document.getData().get("email").toString();
                                         usernameSearchedUser = document.getData().get("username").toString();
@@ -135,7 +139,7 @@ public class AddContactActivity extends AppCompatActivity {
                                                 if (task.isSuccessful()) {
                                                     DocumentSnapshot document = task.getResult();
                                                     if (document.exists()) {
-                                                        TextInputLayoutContactEmail.setError("This email is already exist");
+                                                        TextInputLayoutContactEmail.setError("This account is already exist in your contact");
                                                         textInputLayoutContactName.setError(null);
                                                         textViewUserNotFound.setVisibility(View.GONE);
                                                         cardViewUserFound.setVisibility(View.GONE);
@@ -204,7 +208,7 @@ public class AddContactActivity extends AppCompatActivity {
             }
 
             Map<String, Object> data = new HashMap<>();
-            data.put("email", emailSearchedUser);
+            data.put("id", idSearchedUser);
             data.put("contactName", editTextNameContact.getText().toString());
 
             firebaseFirestore.collection("users")

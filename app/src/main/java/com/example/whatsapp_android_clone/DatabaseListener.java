@@ -1,11 +1,11 @@
 package com.example.whatsapp_android_clone;
 
-import android.widget.Toast;
-
-import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.annotations.Nullable;
@@ -14,13 +14,24 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseListener extends ViewModel {
 
-    public FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     public FirebaseFirestore firestoreDatabase = FirebaseFirestore.getInstance();
     public Boolean isUserInFirestoreExist = true;
     public Boolean isErrorOccuredDuringFetchUser = false;
+    public int index;
+    public boolean nextFetch;
+
+    private MutableLiveData<List<List<String>>> contacts = new MutableLiveData<>(null);
+    public MutableLiveData<List<List<String>>> getContacts(){
+        return contacts;
+    }
 
     private MutableLiveData<String> username = new MutableLiveData<String>("No Connection....");
     public MutableLiveData<String> getUsername() {
@@ -98,5 +109,45 @@ public class DatabaseListener extends ViewModel {
                 }
             }
         });
-    }
+
+    } // End getUserInformation
+
+
+    public void getUserContacts(String userId){
+        firestoreDatabase.collection("users")
+                .document(userId)
+                .collection("contacts")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            //Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        List<List<String>> tempContacts = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot doc : value) {
+
+                            List<String> contact = new ArrayList<>();
+
+                            if (doc.getData().get("id") != null) {
+                                contact.add(doc.getData().get("id").toString());
+                            }
+
+                            if (doc.getData().get("contactName") != null) {
+                                contact.add(doc.getData().get("contactName").toString());
+                            }
+
+                            tempContacts.add(contact);
+                        }
+
+                        contacts.setValue(tempContacts);
+                    }
+                });
+
+    }// End getUserContacts
+
+
 }
