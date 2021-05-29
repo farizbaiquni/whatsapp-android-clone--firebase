@@ -22,16 +22,18 @@ import java.util.List;
 
 public class DatabaseListener extends ViewModel {
 
+    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
     public FirebaseFirestore firestoreDatabase = FirebaseFirestore.getInstance();
     public Boolean isUserInFirestoreExist = true;
     public Boolean isErrorOccuredDuringFetchUser = false;
-    public int index;
-    public boolean nextFetch;
 
-    private MutableLiveData<List<List<String>>> contacts = new MutableLiveData<>(null);
-    public MutableLiveData<List<List<String>>> getContacts(){
-        return contacts;
-    }
+    private MutableLiveData<List<SelectContactModel>> contactsList = new MutableLiveData<>(null);
+    public MutableLiveData<List<SelectContactModel>> getContactsList(){return contactsList; }
+
+    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
+    public MutableLiveData<String> getKeyword(){ return keyword; }
+    public void setKeyword(String key){ this.keyword.setValue(key);}
 
     private MutableLiveData<String> username = new MutableLiveData<String>("No Connection....");
     public MutableLiveData<String> getUsername() {
@@ -143,7 +145,69 @@ public class DatabaseListener extends ViewModel {
                             tempContacts.add(contact);
                         }
 
-                        contacts.setValue(tempContacts);
+                        if(tempContacts != null){
+
+                            List<String> contactsId = new ArrayList<>();
+
+                            int index = 0;
+                            while(index < tempContacts.size()){
+                                contactsId.add(tempContacts.get(index).get(0));
+                                index++;
+                            }
+
+                            firebaseFirestore.collection("users")
+                                    .whereIn("uid", contactsId)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                int i = 0;
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    tempContacts.get(i).add(document.getData().get("photoProfile").toString());
+                                                    tempContacts.get(i).add(document.getData().get("description").toString());
+                                                    i++;
+                                                }
+
+                                                List<SelectContactModel> selectContactModelList = new ArrayList<>();
+
+                                                selectContactModelList.add(new SelectContactModel(
+                                                        0, //type
+                                                        "", //id
+                                                        "", //photo
+                                                        "New Group", //username or contactName
+                                                        "" //description
+                                                ));
+
+                                                selectContactModelList.add(new SelectContactModel(
+                                                        0, //type
+                                                        "", //id
+                                                        "", //photo
+                                                        "New Contact", //username or contactName
+                                                        "" //description
+                                                ));
+
+                                                for(int a = 0; a < tempContacts.size(); a++ ){
+                                                    selectContactModelList.add(new SelectContactModel(
+                                                            1, //type
+                                                            tempContacts.get(a).get(0), //id
+                                                            tempContacts.get(a).get(2), //photo
+                                                            tempContacts.get(a).get(1), //username or contactName
+                                                            tempContacts.get(a).get(3) //description
+                                                    ));
+                                                }
+
+                                                contactsList.setValue(selectContactModelList);
+
+                                            } else {
+                                                //Error getting documents
+                                            }
+                                        }
+                                    });
+
+                        }
+
+//                        contacts.setValue(tempContacts);
                     }
                 });
 

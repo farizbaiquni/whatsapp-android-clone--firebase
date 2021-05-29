@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,22 +21,22 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     Context context;
-    List<ModelSettingMenu> modelSettingMenus;
+    List<SettingMenuModel> settingMenuModels;
 
-    public SettingMenuAdapter(Context ctx, List<ModelSettingMenu> modelSettingMenus) {
+    public SettingMenuAdapter(Context ctx, List<SettingMenuModel> settingMenuModels) {
         this.context = ctx;
-        this.modelSettingMenus = modelSettingMenus;
+        this.settingMenuModels = settingMenuModels;
     }
 
     @Override
     public int getItemViewType(int position) {
-        switch (modelSettingMenus.get(position).type){
+        switch (settingMenuModels.get(position).type){
             case 0:
-                return ModelSettingMenu.PROFILE_TYPE;
+                return SettingMenuModel.PROFILE_TYPE;
             case 1:
-                return ModelSettingMenu.MENU_TYPE;
+                return SettingMenuModel.MENU_TYPE;
             case 2:
-                return ModelSettingMenu.INVITE_FRIEND_TYPE;
+                return SettingMenuModel.INVITE_FRIEND_TYPE;
             default:
                 return -1;
         }
@@ -49,15 +48,15 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
         View view;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         switch (viewType){
-            case ModelSettingMenu.PROFILE_TYPE:
+            case SettingMenuModel.PROFILE_TYPE:
                 view = layoutInflater.inflate(R.layout.setting_menu_profile, parent, false);
                 return new ProfileViewHolder(view);
 
-            case ModelSettingMenu.MENU_TYPE:
+            case SettingMenuModel.MENU_TYPE:
                 view = layoutInflater.inflate(R.layout.setting_menu_row, parent, false);
                 return new MenuViewHolder(view);
 
-            case ModelSettingMenu.INVITE_FRIEND_TYPE:
+            case SettingMenuModel.INVITE_FRIEND_TYPE:
                 view = layoutInflater.inflate(R.layout.setting_menu_invite_friend, parent, false);
                 return new InviteFriendViewHolder(view);
 
@@ -69,10 +68,10 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        final ModelSettingMenu object = modelSettingMenus.get(position);
+        final SettingMenuModel object = settingMenuModels.get(position);
         if(object != null){
             switch (object.type){
-                case ModelSettingMenu.PROFILE_TYPE:
+                case SettingMenuModel.PROFILE_TYPE:
                     ProfileViewHolder profileViewHolder = (ProfileViewHolder) holder;
                     try {
                         Picasso.get().load(object.photoProfile).into(profileViewHolder.circleImageViewImageProfile);
@@ -91,14 +90,14 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
                     });
                     break;
 
-                case ModelSettingMenu.MENU_TYPE:
+                case SettingMenuModel.MENU_TYPE:
                     MenuViewHolder menuViewHolder = (MenuViewHolder) holder;
                     menuViewHolder.imageViewSettingImage.setImageResource(object.image);
                     menuViewHolder.textViewSettingName.setText(object.title);
                     menuViewHolder.getTextViewSettingDescription.setText(object.description);
                     break;
 
-                case ModelSettingMenu.INVITE_FRIEND_TYPE:
+                case SettingMenuModel.INVITE_FRIEND_TYPE:
                     InviteFriendViewHolder inviteFriendViewHolder = (InviteFriendViewHolder) holder;
                     inviteFriendViewHolder.imageViewImageInviteFriend.setImageResource(object.image);
                     inviteFriendViewHolder.textViewImageInviteFriend.setText(object.title);
@@ -110,7 +109,7 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return modelSettingMenus.size();
+        return settingMenuModels.size();
     }
 
 

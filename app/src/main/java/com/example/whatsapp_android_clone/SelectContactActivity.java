@@ -3,13 +3,10 @@ package com.example.whatsapp_android_clone;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,21 +15,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SelectContactActivity extends AppCompatActivity {
 
@@ -41,42 +30,29 @@ public class SelectContactActivity extends AppCompatActivity {
 
     private ActionBar bar;
     private DatabaseListener databaseListener;
-    private CardView cardViewNewGroup, cardViewNewContact;
     private RecyclerView contactRecyclerView;
     private ProgressBar progressBar;
-
-    private int index;
-
-    private List<ModelProfileContact> modelContactList = new ArrayList<>();
-    private List<List<String>> contactsList = new ArrayList<>();
-    private ContactAdapter contactAdapter;
+    private SelectContactAdapter contactAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_contact);
-
-        index = 0;
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseListener = new DatabaseListener();
+        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         TextView debug = findViewById(R.id.debug_contact);
         progressBar = findViewById(R.id.progress_bar_select_contact);
         contactRecyclerView = findViewById(R.id.recycler_view_contact);
-        cardViewNewGroup = findViewById(R.id.card_view_new_group);
-        cardViewNewContact = findViewById(R.id.card_view_new_contact);
 
-        bar = getSupportActionBar();
-        bar.setTitle("Select Contact");
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setTitle("Select Contact");
+            getSupportActionBar().setSubtitle("Getting contact...");
+        }
 
         progressBar.setVisibility(View.GONE);
-
-        cardViewNewContact.setOnClickListener( v -> {
-            Intent intentToAddContact = new Intent(SelectContactActivity.this, AddContactActivity.class);
-            startActivity(intentToAddContact);
-        });
 
 
         //RECYCLER VIEW
@@ -84,70 +60,41 @@ public class SelectContactActivity extends AppCompatActivity {
         databaseListener.getLoggedUser().observe(SelectContactActivity.this, currentUser -> {
 
             if(currentUser != null){
-                databaseListener.getUserContacts(currentUser.getUid());
-                databaseListener.getContacts().observe(SelectContactActivity.this, contacts -> {
 
-                    progressBar.setVisibility(View.VISIBLE);
+                databaseListener.getUserContacts(currentUser.getUid());
+                databaseListener.getContactsList().observe(SelectContactActivity.this, contacts -> {
 
                     if(contacts != null && contacts.size() > 0){
 
-                        index = 0;
-                        List<String> contactsId = new ArrayList<>();
-
-                        while(index < contacts.size()){
-                            contactsId.add(contacts.get(index).get(0));
-                            index++;
+                        //Change sub title to contacts size
+                        String textContact;
+                        if(contacts.size() <= 1){
+                            textContact = contacts.size() + " contact";
+                        } else {
+                            textContact = contacts.size() + " contacts";
                         }
 
-                        firebaseFirestore.collection("users")
-                                .whereIn("uid", contactsId)
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            int i = 0;
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                contacts.get(i).add(document.getData().get("photoProfile").toString());
-                                                contacts.get(i).add(document.getData().get("description").toString());
-                                                i++;
-                                            }
+                        if(getSupportActionBar() != null){
+                            getSupportActionBar().setSubtitle(textContact);
+                        }
 
-                                            for(int a = 0; a < contacts.size(); a++ ){
-                                                modelContactList.add(new ModelProfileContact(
-                                                        contacts.get(a).get(0), //id
-                                                        contacts.get(a).get(2), //photo
-                                                        contacts.get(a).get(1), //username or contactName
-                                                        contacts.get(a).get(3) //description
-                                                ));
-                                            }
-
-                                            contactAdapter = new ContactAdapter(SelectContactActivity.this, modelContactList);
-                                            contactRecyclerView.setAdapter(contactAdapter);
-                                            contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
-
-                                            progressBar.setVisibility(View.GONE);
-
-                                        } else {
-//                                            Log.d(TAG, "Error getting documents: ", task.getException());
-                                        }
-                                    }
-                                });
-
+                        updateContactList(contacts);
                     } else {
-                        progressBar.setVisibility(View.GONE);
                         //DISPLAY CONTACT NOT FOUND
                     }
 
-                }); //End getContacts
+                }); //End getContactsList
+
             } //End if
+
         }); //End getLoggedUser
 
 
     } // End onCreate
 
 
-    //Option / Context menu
+
+    //Option or Context menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -156,6 +103,14 @@ public class SelectContactActivity extends AppCompatActivity {
 
         MenuItem search_menu =  menu.findItem(R.id.menu_select_contact_search);
         SearchView searchView = (SearchView) search_menu.getActionView();
+
+        if(databaseListener.getKeyword().getValue() != null){
+            searchView.setQuery(databaseListener.getKeyword().getValue(), false);
+            searchView.setIconified(false);
+        }
+
+        updateContactListBySearch();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -165,7 +120,13 @@ public class SelectContactActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                Toast.makeText(SelectContactActivity.this, newText, Toast.LENGTH_SHORT).show();
+
+                if(newText != null){
+                    databaseListener.setKeyword(newText);
+                }
+
+                updateContactListBySearch();
+
                 return false;
             }
         });
@@ -186,4 +147,30 @@ public class SelectContactActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    public void updateContactList(List<SelectContactModel> modalContactList){
+
+        contactAdapter = new SelectContactAdapter(SelectContactActivity.this, modalContactList);
+        contactRecyclerView.setAdapter(contactAdapter);
+        contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
+    }
+
+
+    public void updateContactListBySearch(){
+        databaseListener.getContactsList().observe(SelectContactActivity.this, contacts -> {
+            if(contacts != null){
+                databaseListener.getKeyword().observe(SelectContactActivity.this, keyword -> {
+                    if(keyword != null){
+                        updateContactList(contacts.stream()
+                                .filter(data -> data.usernameProfileContact.toLowerCase().contains(keyword.toLowerCase()))
+                                .map(data -> new SelectContactModel(data.type, data.idProfile, data.photoProfileContact, data.usernameProfileContact, data.desctiptionProfileContact))
+                                .collect(Collectors.toList()));
+
+                    }
+                });
+            }
+        });
+    }
+
 }

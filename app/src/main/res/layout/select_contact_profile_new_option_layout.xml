@@ -2,34 +2,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/card_view_profile_contact"
+        android:id="@+id/cv_new_option"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardElevation="0dp"
         android:layout_marginTop="10dp"
-        app:cardElevation="0dp">
+        app:cardBackgroundColor="@android:color/transparent">
 
         <LinearLayout
-            android:id="@+id/linier_layout_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civ_image_new_option"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/civ_image_profile_contact"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/friends"
-                app:civ_border_width="0dp"
-                app:civ_border_color="#FF000000"/>
+                android:src="@drawable/friends"/>
 
             <LinearLayout
-                android:id="@+id/content_profile_setting_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -37,20 +32,12 @@
                 android:layout_gravity="center_vertical">
 
                 <TextView
-                    android:id="@+id/tv_username_profile_contact"
-                    android:layout_width="300dp"
+                    android:id="@+id/tv_title_new_profie"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="UsernameUsernameUsernameUsernameUsernameUsername"
+                    android:text="New Option"
                     android:textSize="17sp"
                     android:textStyle="bold"
-                    android:maxLines="1"/>
-
-                <TextView
-                    android:id="@+id/tv_description_profile_contact"
-                    android:layout_width="300dp"
-                    android:layout_height="wrap_content"
-                    android:text="DescriptionDescriptionDescriptionDescription"
-                    android:textSize="15sp"
                     android:maxLines="1"/>
 
             </LinearLayout>

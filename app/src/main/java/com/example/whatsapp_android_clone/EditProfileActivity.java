@@ -62,7 +62,7 @@ public class EditProfileActivity extends AppCompatActivity {
             actionBar.setTitle("Profile");
         }
 
-        databaseListener = new DatabaseListener();
+        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseFirestore = FirebaseFirestore.getInstance();
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();

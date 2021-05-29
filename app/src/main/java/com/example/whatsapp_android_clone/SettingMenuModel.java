@@ -1,6 +1,6 @@
 package com.example.whatsapp_android_clone;
 
-public class ModelSettingMenu {
+public class SettingMenuModel {
 
     public static final int PROFILE_TYPE = 0;
     public static final int MENU_TYPE = 1 ;
@@ -12,7 +12,7 @@ public class ModelSettingMenu {
     public String title, description;
     public String photoProfile;
 
-    public ModelSettingMenu (int type, int image, String title, String description, int barcode, String photoProfile){
+    public SettingMenuModel(int type, int image, String title, String description, int barcode, String photoProfile){
         this.type = type;
         this.image = image;
         this.barcode = barcode;

@@ -21,7 +21,7 @@ public class SettingActivity extends AppCompatActivity {
     private int settingMenuImages[] = {R.drawable.key, R.drawable.chat, R.drawable.notification,
             R.drawable.usage, R.drawable.help};
 
-    List<ModelSettingMenu> modelSettingMenus = new ArrayList<>();
+    List<SettingMenuModel> settingMenuModels = new ArrayList<>();
 
 
     @Override
@@ -73,10 +73,10 @@ public class SettingActivity extends AppCompatActivity {
 
 
     private void callSetAdapterSettingMenu(String username, String description, String photoProfile){
-        modelSettingMenus.clear();
+        settingMenuModels.clear();
 
         //PROFILE
-        modelSettingMenus.add(new ModelSettingMenu(ModelSettingMenu.PROFILE_TYPE,
+        settingMenuModels.add(new SettingMenuModel(SettingMenuModel.PROFILE_TYPE,
                 R.drawable.friends,
                 username,
                 description,
@@ -86,7 +86,7 @@ public class SettingActivity extends AppCompatActivity {
 
         //OPTION MENU
         for(int i = 0; i <= settingMenuNames.length - 1; i++){
-            modelSettingMenus.add(new ModelSettingMenu(ModelSettingMenu.MENU_TYPE,
+            settingMenuModels.add(new SettingMenuModel(SettingMenuModel.MENU_TYPE,
                     settingMenuImages[i],
                     settingMenuNames[i],
                     settingMenuDesctiptions[i],
@@ -95,14 +95,14 @@ public class SettingActivity extends AppCompatActivity {
         }
 
         //INVITE A FRIEND
-        modelSettingMenus.add(new ModelSettingMenu(ModelSettingMenu.INVITE_FRIEND_TYPE,
+        settingMenuModels.add(new SettingMenuModel(SettingMenuModel.INVITE_FRIEND_TYPE,
                 R.drawable.friends,
                 "Invite a friend",
                 "",
                 0,
                 ""));
 
-        settingMenuAdapter = new SettingMenuAdapter(SettingActivity.this, modelSettingMenus);
+        settingMenuAdapter = new SettingMenuAdapter(SettingActivity.this, settingMenuModels);
         settingRecyclerView.setAdapter(settingMenuAdapter);
         settingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
