@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -81,12 +82,9 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
                     profileViewHolder.textViewUsernameProfile.setText(object.title);
                     profileViewHolder.textViewDescriptionProfile.setText(object.description);
                     profileViewHolder.imageViewBarcodeProfile.setImageResource(object.barcode);
-                    ((ProfileViewHolder) holder).relativeLayoutProfileLayout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(context, EditProfileActivity.class);
-                            context.startActivity(intent);
-                        }
+                    profileViewHolder.cardViewProfile.setOnClickListener(v -> {
+                        Intent intent = new Intent(context, EditProfileActivity.class);
+                        context.startActivity(intent);
                     });
                     break;
 
@@ -116,6 +114,7 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     //======================= VIEW HOLDER =======================
     public static class ProfileViewHolder extends RecyclerView.ViewHolder {
+        CardView cardViewProfile;
         CircleImageView circleImageViewImageProfile;
         TextView textViewUsernameProfile, textViewDescriptionProfile;
         ImageView imageViewBarcodeProfile;
@@ -123,6 +122,7 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardViewProfile = itemView.findViewById(R.id.card_view_profile_setting_menu);
             circleImageViewImageProfile = itemView.findViewById(R.id.image_profile_setting_menu);
             textViewUsernameProfile = itemView.findViewById(R.id.username_profile_setting_menu);
             textViewDescriptionProfile = itemView.findViewById(R.id.description_profile_setting_menu);

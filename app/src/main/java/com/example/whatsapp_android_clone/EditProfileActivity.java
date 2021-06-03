@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +43,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storagePhotoProfileReference;
 
-    private String currentUsernameUser;
     private final int CHOOSE_IMAGE_GALERRY_CODE = 10;
     private final int CHOOSE_IMAGE_CAMERA_CODE = 20;
 
@@ -54,16 +52,12 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-        //WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
             actionBar.setTitle("Profile");
         }
-
-        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         firebaseFirestore = FirebaseFirestore.getInstance();
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         storagePhotoProfileReference = firebaseStorage.getReference().child("photoProfile").child(currentUser.getUid());
@@ -80,31 +74,31 @@ public class EditProfileActivity extends AppCompatActivity {
         databaseListener.checkIsUserLoggedIn();
         databaseListener.getLoggedUser().observe(EditProfileActivity.this, loggedUser -> {
             if(loggedUser != null){
-                databaseListener.getUserInformation(loggedUser.getUid());
+                databaseListener.updateUserInformation(loggedUser.getUid());
             }
         });
 
 
         //Updating profile layout based on user data in firestore and updating if there's a change
-        databaseListener.getUsername().observe(EditProfileActivity.this, username -> {
-            textViewUsername.setText(username);
-            currentUsernameUser = username;
-        });
+        databaseListener.getUserInformation().observe(EditProfileActivity.this, userData -> {
+            if(userData != null){
 
-        databaseListener.getDescription().observe(EditProfileActivity.this, description ->
-                editTextDescription.setText(description));
+                try {
+                    Picasso.get().load(userData.get(0)).into(circleImageViewPhotoProfile);
+                }catch (Exception e){
+                    circleImageViewPhotoProfile.setImageResource(R.drawable.friends);
+                }
 
-        databaseListener.getPhotoProfile().observe(EditProfileActivity.this, photoProfile -> {
-            try{
-                Picasso.get().load(photoProfile).into(circleImageViewPhotoProfile);
-            } catch (Exception e){
-                circleImageViewPhotoProfile.setImageResource(R.drawable.friends);
+                textViewUsername.setText(userData.get(1));
+                editTextDescription.setText(userData.get(2));
+
             }
         });
 
 
         textViewUsername.setOnClickListener(v -> {
-            BottomSheetEditUsername bottomSheetEditUsername = new BottomSheetEditUsername(currentUsernameUser, currentUser.getUid());
+            BottomSheetEditUsername bottomSheetEditUsername =
+                    new BottomSheetEditUsername(databaseListener.getUserInformation().getValue().get(1), currentUser.getUid());
             bottomSheetEditUsername.show(getSupportFragmentManager(), "Show edit username");
         });
 
@@ -224,8 +218,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-
-    //UPDATE URL PHOTO PROFILE
+    //UPDATE URL PHOTO PROFILE IN FIRESTORE
     private void updateUrlPhotoProfile(String newUrl){
         DocumentReference userRef = firebaseFirestore.collection("users").document(currentUser.getUid());
         userRef

@@ -1,11 +1,11 @@
 package com.example.whatsapp_android_clone;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +18,6 @@ public class SettingActivity extends AppCompatActivity {
     private String username ="No Connection...", description = "No Connection...", photoProfile = "";
 
     private String settingMenuDesctiptions [], settingMenuNames[];
-    private int settingMenuImages[] = {R.drawable.key, R.drawable.chat, R.drawable.notification,
-            R.drawable.usage, R.drawable.help};
 
     List<SettingMenuModel> settingMenuModels = new ArrayList<>();
 
@@ -29,8 +27,9 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Settings");
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setTitle("Settings");
+        }
 
         settingRecyclerView = findViewById(R.id.recycler_view_setting);
 
@@ -41,68 +40,49 @@ public class SettingActivity extends AppCompatActivity {
 
         //View Model and Live Data to fetch user data from firestore sync / realtime
         databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
-        //Check is user loggeed in or not, to avoid null exception
+
+
+        initRecyclerView();
+
+
         databaseListener.checkIsUserLoggedIn();
         databaseListener.getLoggedUser().observe(SettingActivity.this, loggedUser -> {
             if(loggedUser != null){
-                databaseListener.getUserInformation(loggedUser.getUid());
+                databaseListener.updateUserInformation(loggedUser.getUid());
             }
         });
 
-        //Updating profile layout based on user data in firestore and updating if there's a change
-        databaseListener.getUsername().observe(SettingActivity.this, data -> {
-            username = data;
-            callSetAdapterSettingMenu(username, description, photoProfile);
+
+
+        databaseListener.getSettingMenuModel().observe(SettingActivity.this, data -> {
+            if(data != null){
+
+                databaseListener.getUserInformation().observe(SettingActivity.this, info -> {
+                    if(info != null){
+
+                        SettingMenuModel tempModel = new SettingMenuModel(
+                                SettingMenuModel.PROFILE_TYPE,
+                                R.drawable.friends,
+                                info.get(1),
+                                info.get(2),
+                                R.drawable.barcode,
+                                info.get(0)
+                        );
+
+                        data.set(0, tempModel);
+
+                        settingMenuAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
         });
-
-
-        databaseListener.getDescription().observe(SettingActivity.this, data -> {
-            description = data;
-            callSetAdapterSettingMenu(username, description, photoProfile);
-        });
-
-
-        databaseListener.getPhotoProfile().observe(SettingActivity.this, data -> {
-            photoProfile = data;
-            callSetAdapterSettingMenu(username, description, photoProfile);
-        });
-
-
 
     } //end onCreate
 
 
-    private void callSetAdapterSettingMenu(String username, String description, String photoProfile){
-        settingMenuModels.clear();
-
-        //PROFILE
-        settingMenuModels.add(new SettingMenuModel(SettingMenuModel.PROFILE_TYPE,
-                R.drawable.friends,
-                username,
-                description,
-                R.drawable.barcode,
-                photoProfile
-        ));
-
-        //OPTION MENU
-        for(int i = 0; i <= settingMenuNames.length - 1; i++){
-            settingMenuModels.add(new SettingMenuModel(SettingMenuModel.MENU_TYPE,
-                    settingMenuImages[i],
-                    settingMenuNames[i],
-                    settingMenuDesctiptions[i],
-                    0,
-                    ""));
-        }
-
-        //INVITE A FRIEND
-        settingMenuModels.add(new SettingMenuModel(SettingMenuModel.INVITE_FRIEND_TYPE,
-                R.drawable.friends,
-                "Invite a friend",
-                "",
-                0,
-                ""));
-
-        settingMenuAdapter = new SettingMenuAdapter(SettingActivity.this, settingMenuModels);
+    private void initRecyclerView(){
+        databaseListener.initSettingMenuModel(settingMenuNames, settingMenuDesctiptions);
+        settingMenuAdapter = new SettingMenuAdapter(SettingActivity.this, databaseListener.getSettingMenuModel().getValue());
         settingRecyclerView.setAdapter(settingMenuAdapter);
         settingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

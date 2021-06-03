@@ -1,7 +1,6 @@
 package com.example.whatsapp_android_clone;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +27,6 @@ public class SelectContactActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private FirebaseUser currentUser;
 
-    private ActionBar bar;
     private DatabaseListener databaseListener;
     private RecyclerView contactRecyclerView;
     private ProgressBar progressBar;

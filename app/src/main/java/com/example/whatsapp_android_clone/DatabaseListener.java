@@ -1,6 +1,7 @@
 package com.example.whatsapp_android_clone;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -23,47 +24,73 @@ import java.util.List;
 public class DatabaseListener extends ViewModel {
 
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
 
     public FirebaseFirestore firestoreDatabase = FirebaseFirestore.getInstance();
     public Boolean isUserInFirestoreExist = true;
     public Boolean isErrorOccuredDuringFetchUser = false;
 
-    private MutableLiveData<List<SelectContactModel>> contactsList = new MutableLiveData<>(null);
-    public MutableLiveData<List<SelectContactModel>> getContactsList(){return contactsList; }
 
-    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
-    public MutableLiveData<String> getKeyword(){ return keyword; }
-    public void setKeyword(String key){ this.keyword.setValue(key);}
 
-    private MutableLiveData<String> username = new MutableLiveData<String>("No Connection....");
-    public MutableLiveData<String> getUsername() {
-        return username;
+    //================================== LOGGED USER INFORMATION / PROFILE ==================================
+    private MutableLiveData<List<SettingMenuModel>> settingMenuModel = new MutableLiveData<>(null);
+    public LiveData<List<SettingMenuModel>> getSettingMenuModel(){
+        return settingMenuModel;
     }
+    public void initSettingMenuModel(String settingMenuDesctiptions [], String settingMenuNames[]){
 
-    private MutableLiveData<String> description = new MutableLiveData<>("No Connection...");
-    public MutableLiveData<String> getDescription(){
-        return description;
-    }
+        List<SettingMenuModel> tempSettingMenuModel = new ArrayList<>();
 
-    private MutableLiveData<String> photoProfile = new MutableLiveData<>("");
-    public MutableLiveData<String> getPhotoProfile(){
-        return photoProfile;
-    }
+        int settingMenuImages[] = {R.drawable.key, R.drawable.chat, R.drawable.notification,
+                R.drawable.usage, R.drawable.help};
 
-    private MutableLiveData<FirebaseUser> loggedUser = new MutableLiveData<>(null);
-    public MutableLiveData<FirebaseUser> getLoggedUser(){
-        return loggedUser;
-    }
 
-    public void checkIsUserLoggedIn(){
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser != null){
-            loggedUser.setValue(currentUser);
+        //PROFILE
+        tempSettingMenuModel.add(new SettingMenuModel(
+                SettingMenuModel.PROFILE_TYPE,
+                R.drawable.friends,
+                "Getting Data...",
+                "Getting Data...",
+                R.drawable.barcode,
+                ""
+        ));
+
+
+        //OPTION MENU
+        for(int i = 0; i <= settingMenuNames.length - 1; i++){
+            tempSettingMenuModel.add(new SettingMenuModel(SettingMenuModel.MENU_TYPE,
+                    settingMenuImages[i],
+                    settingMenuNames[i],
+                    settingMenuDesctiptions[i],
+                    0,
+                    ""));
         }
+
+        //INVITE A FRIEND
+        tempSettingMenuModel.add(new SettingMenuModel(SettingMenuModel.INVITE_FRIEND_TYPE,
+                R.drawable.friends,
+                "Invite a friend",
+                "",
+                0,
+                ""));
+
+        settingMenuModel.setValue(null);
+        settingMenuModel.setValue(tempSettingMenuModel);
+
     }
 
-    //Get user information from firestore
-    public void getUserInformation(String userId){
+
+    private MutableLiveData<List<String>> userInformation = new MutableLiveData<>(null);
+    public LiveData<List<String>> getUserInformation(){
+        return userInformation;
+    }
+    public void updateUserInformation(String userId){
+        userInformation.setValue(null);
+
+        List<String> tempUserInformation = new ArrayList<>();
+        List<SettingMenuModel> tempSettingMenuModel = new ArrayList<>();
+
         final DocumentReference docRef = firestoreDatabase.collection("users").document(userId);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -73,8 +100,10 @@ public class DatabaseListener extends ViewModel {
                 //LISTEN FAILED
                 if (e != null) {
                     isErrorOccuredDuringFetchUser = true;
-                    username.setValue("Error Fetch");
-                    description.setValue("Error Fetch");
+                    tempUserInformation.add("");
+                    tempUserInformation.add("Error getting data");
+                    tempUserInformation.add("Error getting data");
+                    userInformation.setValue(tempUserInformation);
                     return;
                 }
 
@@ -82,29 +111,26 @@ public class DatabaseListener extends ViewModel {
                 if (snapshot != null && snapshot.exists()) {
                     isErrorOccuredDuringFetchUser = false;
 
-                    if(snapshot.getData().get("username") == null && snapshot.getData().get("description") == null
-                            && snapshot.getData().get("photoProfile") == null){
-                        username.setValue("Not Set");
-                        description.setValue("Not Set");
-                    }
-
-                    if(snapshot.getData().get("username") == null || snapshot.getData().get("username") == ""){
-                        username.setValue("Not Set");
-                    } else {
-                        username.setValue(snapshot.getData().get("username").toString());
-                    }
-
-                    if(snapshot.getData().get("description") == null || snapshot.getData().get("description") == ""){
-                        description.setValue("Not Set");
-                    } else {
-                        description.setValue(snapshot.getData().get("description").toString());
-                    }
-
                     try {
-                        photoProfile.setValue(snapshot.getData().get("photoProfile").toString());
-                    } catch (Exception error){
-                        photoProfile.setValue("");
+                        tempUserInformation.add(snapshot.getData().get("photoProfile").toString());
+                    } catch (Exception ee){
+                        tempUserInformation.add("");
                     }
+
+                    if(snapshot.getData().get("username") == null || snapshot.getData().get("username").toString().length() < 1){
+                        tempUserInformation.add("Not Set");
+                    } else {
+                        tempUserInformation.add(snapshot.getData().get("username").toString());
+                    }
+
+                    if(snapshot.getData().get("description") == null || snapshot.getData().get("description").toString().length() < 1){
+                        tempUserInformation.add("Not Set");
+                    } else {
+                        tempUserInformation.add(snapshot.getData().get("description").toString());
+                    }
+
+                    userInformation.setValue(tempUserInformation);
+
 
                 } else {
                     isUserInFirestoreExist = false;
@@ -112,8 +138,21 @@ public class DatabaseListener extends ViewModel {
             }
         });
 
+
     } // End getUserInformation
 
+
+
+
+
+
+    //================================== SELECT CONTACT ==================================
+    private MutableLiveData<List<SelectContactModel>> contactsList = new MutableLiveData<>(null);
+    public LiveData<List<SelectContactModel>> getContactsList(){return contactsList; }
+
+    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
+    public LiveData<String> getKeyword(){ return keyword; }
+    public void setKeyword(String key){ this.keyword.setValue(key);}
 
     public void getUserContacts(String userId){
         firestoreDatabase.collection("users")
@@ -212,6 +251,27 @@ public class DatabaseListener extends ViewModel {
                 });
 
     }// End getUserContacts
+
+
+
+
+
+    //================================== CHECK IS USER LOGGED IN ==================================
+    private MutableLiveData<FirebaseUser> loggedUser = new MutableLiveData<>(null);
+    public LiveData<FirebaseUser> getLoggedUser(){
+        return loggedUser;
+    }
+    public void checkIsUserLoggedIn(){
+        if(currentUser != null){
+            loggedUser.setValue(currentUser);
+        }
+    }
+
+
+
+
+
+
 
 
 }

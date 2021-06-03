@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whatsapp_android_clone.AddContactActivity;
+import com.example.whatsapp_android_clone.R;
+import com.example.whatsapp_android_clone.SelectContactModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

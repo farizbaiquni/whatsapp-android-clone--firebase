@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         databaseListener.checkIsUserLoggedIn();
         databaseListener.getLoggedUser().observe(MainActivity.this, loggedUser -> {
             if(loggedUser != null){
-                databaseListener.getUserInformation(loggedUser.getUid());
+                databaseListener.updateUserInformation(loggedUser.getUid());
             }
         });
 

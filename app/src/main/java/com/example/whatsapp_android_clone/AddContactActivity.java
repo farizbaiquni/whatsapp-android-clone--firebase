@@ -176,13 +176,10 @@ public class AddContactActivity extends AppCompatActivity {
         buttonSubmit.setVisibility(View.GONE);
 
        if (!Patterns.EMAIL_ADDRESS.matcher(querySearch.trim()).matches()) {
-            textInputLayoutContactName.setError(null);
             textViewError.setVisibility(View.VISIBLE);
             textViewError.setText("Invalid email format");
-            cardViewUserFound.setVisibility(View.GONE);
-            textInputLayoutContactName.setVisibility(View.GONE);
-            buttonSubmit.setVisibility(View.GONE);
         } else {
+           //Check user by email
             firebaseFirestore.collection("users")
                     .whereEqualTo("email", querySearch.trim())
                     .whereNotEqualTo("email", currentUser.getEmail())
@@ -210,16 +207,12 @@ public class AddContactActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 DocumentSnapshot document = task.getResult();
                                                 if (document.exists()) {
-                                                    textInputLayoutContactName.setError(null);
                                                     textViewError.setVisibility(View.VISIBLE);
                                                     textViewError.setText("This account is already exist in your contact");
-                                                    cardViewUserFound.setVisibility(View.GONE);
-                                                    textInputLayoutContactName.setVisibility(View.GONE);
-                                                    buttonSubmit.setVisibility(View.GONE);
 
                                                 } else {
+                                                    isUserFound = true;
                                                     textInputLayoutContactName.setError(null);
-                                                    textViewError.setVisibility(View.GONE);
                                                     cardViewUserFound.setVisibility(View.VISIBLE);
                                                     textInputLayoutContactName.setVisibility(View.VISIBLE);
                                                     buttonSubmit.setVisibility(View.VISIBLE);
@@ -240,20 +233,17 @@ public class AddContactActivity extends AppCompatActivity {
                                         }
                                     });
                                 }
-                            } else {
-                                Toast.makeText(AddContactActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if(task.isComplete()){
+                                if(!isUserFound){
+                                    textInputLayoutContactName.setError(null);
+                                    textViewError.setVisibility(View.VISIBLE);
+                                    textViewError.setText("User not found");
+                                }
                             }
                         }
                     });
-
-            if(!isUserFound){
-                textInputLayoutContactName.setError(null);
-                textViewError.setVisibility(View.VISIBLE);
-                textViewError.setText("User not found");
-                cardViewUserFound.setVisibility(View.GONE);
-                textInputLayoutContactName.setVisibility(View.GONE);
-                buttonSubmit.setVisibility(View.GONE);
-            }
 
         }
     }
