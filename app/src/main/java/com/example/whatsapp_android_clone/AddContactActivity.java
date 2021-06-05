@@ -3,10 +3,12 @@ package com.example.whatsapp_android_clone;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +20,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.whatsapp_android_clone.model.AddContactModel;
+import com.example.whatsapp_android_clone.viewModel.AddContactViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,12 +37,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddContactActivity extends AppCompatActivity {
 
-    private TextInputLayout textInputLayoutContactName, TextInputLayoutContactEmail;
+    private TextInputLayout textInputLayoutContactName;
     private TextView textViewError, textViewUsernameUserFound, textViewDescriptionFound;
     private EditText editTextNameContact;
     private Button buttonSubmit;
@@ -54,6 +59,9 @@ public class AddContactActivity extends AppCompatActivity {
             descriptionSearchedUser,
             emailSearchedUser;
 
+    private AddContactModel addContactModel;
+    private AddContactViewModel addContactViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +72,7 @@ public class AddContactActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Add Contact");
         }
 
-        idSearchedUser = "";
-        photoSearchedUser = "";
-        usernameSearchedUser = "";
-        descriptionSearchedUser = "";
-        emailSearchedUser = "";
+        addContactViewModel = new ViewModelProvider(this).get(AddContactViewModel.class);
 
         textInputLayoutContactName = findViewById(R.id.et_name_contact_add_contact_layout);
         textViewError = findViewById(R.id.user_contact_not_found);
@@ -79,46 +83,64 @@ public class AddContactActivity extends AppCompatActivity {
         editTextNameContact = findViewById(R.id.et_name_contact_add_contact);
         buttonSubmit = findViewById(R.id.btn_submit_add_contact);
 
+        clearLayout();
+
+        idSearchedUser = "";
+        photoSearchedUser = "";
+        usernameSearchedUser = "";
+        descriptionSearchedUser = "";
+        emailSearchedUser = "";
+
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        //USER CLICK ADD CONTACT
-        buttonSubmit.setOnClickListener(v -> {
-            //Clear edit text error message
-            TextInputLayoutContactEmail.setError(null);
-            textInputLayoutContactName.setError(null);
-
-            if(TextUtils.isEmpty(editTextNameContact.getText().toString().trim())){
-                TextInputLayoutContactEmail.setError(null);
-                textInputLayoutContactName.setError("Contact name can't be empty");
-                textViewError.setVisibility(View.GONE);
-                cardViewUserFound.setVisibility(View.GONE);
-                textInputLayoutContactName.setVisibility(View.GONE);
-                buttonSubmit.setVisibility(View.GONE);
+        if(addContactViewModel.getAddContactModel().getValue() != null){
+            cardViewUserFound.setVisibility(View.VISIBLE);
+            textInputLayoutContactName.setVisibility(View.VISIBLE);
+            buttonSubmit.setVisibility(View.VISIBLE);
+            try {
+                Picasso.get().load(addContactViewModel.getAddContactModel().getValue().getPhotoProfile()).into(circleImageViewImageUserFound);
+            } catch (Exception e){
+                circleImageViewImageUserFound.setImageResource(R.drawable.friends);
             }
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("id", idSearchedUser);
-            data.put("contactName", editTextNameContact.getText().toString());
+            textViewUsernameUserFound.setText(addContactViewModel.getAddContactModel().getValue().getContactName());
+            textViewDescriptionFound.setText(addContactViewModel.getAddContactModel().getValue().getDescription());
+        }
 
-            firebaseFirestore.collection("users")
-                    .document(currentUser.getUid())
-                    .collection("contacts")
-                    .document(emailSearchedUser.trim())
-                    .set(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Intent intent = new Intent(AddContactActivity.this, SelectContactActivity.class);
-                            startActivity(intent);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AddContactActivity.this, "Failed add contact", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+
+        //USER CLICK ADD CONTACT
+        buttonSubmit.setOnClickListener(v -> {
+
+            if(TextUtils.isEmpty(editTextNameContact.getText().toString())){
+                textInputLayoutContactName.setError("Contact name can't be empty");
+            } else {
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", addContactViewModel.getAddContactModel().getValue().getId());
+                data.put("contactName", addContactViewModel.getAddContactModel().getValue().getContactName());
+
+                firebaseFirestore.collection("users")
+                        .document(currentUser.getUid())
+                        .collection("contacts")
+                        .document(emailSearchedUser.trim())
+                        .set(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Intent intent = new Intent(AddContactActivity.this, SelectContactActivity.class);
+                                clearLayout();
+                                startActivity(intent);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(AddContactActivity.this, "Failed add contact", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
 
         }); // End button submit onClickListener
 
@@ -142,17 +164,24 @@ public class AddContactActivity extends AppCompatActivity {
 
         MenuItem searchMenu = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) searchMenu.getActionView();
-        searchView.setQueryHint("Email");
+        searchView.setQueryHint("Id");
+
+        if(addContactViewModel.getKeyword() != null){
+            searchView.setQuery(addContactViewModel.getKeyword().getValue(), false);
+            searchView.setIconified(false);
+        }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                clearLayout();
                 checkIsUserExist(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                addContactViewModel.setKeyword(newText);
                 textViewError.setVisibility(View.GONE);
                 return false;
             }
@@ -161,7 +190,8 @@ public class AddContactActivity extends AppCompatActivity {
         return true;
     }
 
-    public void checkIsUserExist(String querySearch){
+    private void checkIsUserExist(String querySearch){
+
         isUserFound = false;
         idSearchedUser = "";
         photoSearchedUser = "";
@@ -169,38 +199,25 @@ public class AddContactActivity extends AppCompatActivity {
         descriptionSearchedUser = "";
         emailSearchedUser = "";
 
-        //Clear edit text error message
-        textInputLayoutContactName.setError(null);
-        textViewError.setVisibility(View.GONE);
-        cardViewUserFound.setVisibility(View.GONE);
-        buttonSubmit.setVisibility(View.GONE);
+       //Check user by ID
+        firebaseFirestore.collection("users")
+                .whereEqualTo("id", querySearch)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
-       if (!Patterns.EMAIL_ADDRESS.matcher(querySearch.trim()).matches()) {
-            textViewError.setVisibility(View.VISIBLE);
-            textViewError.setText("Invalid email format");
-        } else {
-           //Check user by email
-            firebaseFirestore.collection("users")
-                    .whereEqualTo("email", querySearch.trim())
-                    .whereNotEqualTo("email", currentUser.getEmail())
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-
-                                    idSearchedUser = document.getId().toString();
-                                    photoSearchedUser = document.getData().get("photoProfile").toString();
-                                    emailSearchedUser = document.getData().get("email").toString();
-                                    usernameSearchedUser = document.getData().get("username").toString();
-                                    descriptionSearchedUser = document.getData().get("description").toString();
+                                //CHECK IS USER NOT EQUAL LOGGED USER
+                                if(!document.getId().equals(currentUser.getUid())){
+                                    isUserFound = true;
 
                                     //CHECK IS USER ALREADY EXIST IN CONTACT
                                     firebaseFirestore.collection("users")
                                             .document(currentUser.getUid())
                                             .collection("contacts")
-                                            .document(emailSearchedUser.trim())
+                                            .document(emailSearchedUser)
                                             .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -211,42 +228,67 @@ public class AddContactActivity extends AppCompatActivity {
                                                     textViewError.setText("This account is already exist in your contact");
 
                                                 } else {
+
+                                                    idSearchedUser = document.getId().toString();
+                                                    photoSearchedUser = Objects.requireNonNull(document.getData().get("photoProfile")).toString();
+                                                    emailSearchedUser = Objects.requireNonNull(document.getData().get("email")).toString();
+                                                    usernameSearchedUser = Objects.requireNonNull(document.getData().get("username")).toString();
+                                                    descriptionSearchedUser = Objects.requireNonNull(document.getData().get("description")).toString();
+
+
+                                                    addContactViewModel.setAddContactModel(
+                                                            new AddContactModel(
+                                                                    idSearchedUser,
+                                                                    photoSearchedUser,
+                                                                    usernameSearchedUser,
+                                                                    descriptionSearchedUser
+                                                            )
+                                                    );
                                                     isUserFound = true;
-                                                    textInputLayoutContactName.setError(null);
                                                     cardViewUserFound.setVisibility(View.VISIBLE);
                                                     textInputLayoutContactName.setVisibility(View.VISIBLE);
                                                     buttonSubmit.setVisibility(View.VISIBLE);
                                                     try {
                                                         Picasso.get()
-                                                                .load(photoSearchedUser)
+                                                                .load(addContactViewModel.getAddContactModel().getValue().getPhotoProfile())
                                                                 .into(circleImageViewImageUserFound);
                                                     } catch (Exception e){
                                                         circleImageViewImageUserFound.setImageResource(R.drawable.friends);
                                                     }
-                                                    textViewUsernameUserFound.setText(usernameSearchedUser);
-                                                    textViewDescriptionFound.setText(descriptionSearchedUser);
+                                                    textViewUsernameUserFound.setText(addContactViewModel.getAddContactModel().getValue().getContactName());
+                                                    textViewDescriptionFound.setText(addContactViewModel.getAddContactModel().getValue().getDescription());
 
                                                 }
                                             } else {
                                                 Toast.makeText(AddContactActivity.this, "Someting went wrong", Toast.LENGTH_SHORT).show();
                                             }
                                         }
-                                    });
+                                    }); //End check is user is already in contact
                                 }
-                            }
 
-                            if(task.isComplete()){
-                                if(!isUserFound){
-                                    textInputLayoutContactName.setError(null);
-                                    textViewError.setVisibility(View.VISIBLE);
-                                    textViewError.setText("User not found");
-                                }
+                            }
+                        } // End task.isSuccessful()
+
+                        if(task.isComplete()){
+                            if(!isUserFound){
+                                textViewError.setVisibility(View.VISIBLE);
+                                textViewError.setText("User not found");
                             }
                         }
-                    });
+                    }
+                }); // End search user exist
 
-        }
+    }//End checkIsUserExist
+
+    private void clearLayout(){
+        textInputLayoutContactName.setError(null);
+        textViewError.setVisibility(View.GONE);
+        cardViewUserFound.setVisibility(View.GONE);
+        textInputLayoutContactName.setVisibility(View.GONE);
+        buttonSubmit.setVisibility(View.GONE);
     }
+
+
 
 }
 

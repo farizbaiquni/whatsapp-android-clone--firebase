@@ -1,4 +1,4 @@
-package com.example.whatsapp_android_clone;
+package com.example.whatsapp_android_clone.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.whatsapp_android_clone.AddContactActivity;
 import com.example.whatsapp_android_clone.R;
-import com.example.whatsapp_android_clone.SelectContactModel;
+import com.example.whatsapp_android_clone.model.SelectContactModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -72,9 +72,9 @@ public class SelectContactAdapter extends RecyclerView.Adapter {
                 case SelectContactModel.NEW_TYPE:
                     NewViewHolder newViewHolder = (NewViewHolder) holder;
                     newViewHolder.circleImageViewNew.setImageResource(R.drawable.friends);
-                    newViewHolder.textViewTitleNew.setText(object.usernameProfileContact);
+                    newViewHolder.textViewTitleNew.setText(object.getUsernameProfileContact());
 
-                    if(object.usernameProfileContact == "New Contact"){
+                    if(object.getUsernameProfileContact() == "New Contact"){
                         newViewHolder.cardViewNew.setOnClickListener( v -> {
                             Intent intent = new Intent(context, AddContactActivity.class);
                             context.startActivity(intent);
@@ -87,15 +87,15 @@ public class SelectContactAdapter extends RecyclerView.Adapter {
                     case SelectContactModel.CONTACT_TYPE:
                         ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
                         try {
-                            Picasso.get().load(object.photoProfileContact).into(contactViewHolder.photoContact);
+                            Picasso.get().load(object.getPhotoProfileContact()).into(contactViewHolder.photoContact);
                         } catch (Exception e){
                             contactViewHolder.photoContact.setImageResource(R.drawable.friends);
                         }
-                        contactViewHolder.usernameContact.setText(object.usernameProfileContact);
-                        contactViewHolder.descriptionContact.setText(object.desctiptionProfileContact);
+                        contactViewHolder.usernameContact.setText(object.getUsernameProfileContact());
+                        contactViewHolder.descriptionContact.setText(object.getDesctiptionProfileContact());
 
                         contactViewHolder.cardViewContact.setOnClickListener( v -> {
-                            Toast.makeText(context, selectContactModel.get(position).usernameProfileContact, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, selectContactModel.get(position).getUsernameProfileContact(), Toast.LENGTH_SHORT).show();
                         });
                         break;
             }

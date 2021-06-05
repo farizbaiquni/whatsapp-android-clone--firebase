@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,78 +15,56 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.whatsapp_android_clone.adapter.SelectContactAdapter;
+import com.example.whatsapp_android_clone.model.SelectContactModel;
+import com.example.whatsapp_android_clone.viewModel.SelectContactViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class SelectContactActivity extends AppCompatActivity {
 
-    private FirebaseFirestore firebaseFirestore;
-    private FirebaseUser currentUser;
-
-    private DatabaseListener databaseListener;
     private RecyclerView contactRecyclerView;
     private ProgressBar progressBar;
     private SelectContactAdapter contactAdapter;
+    private SelectContactViewModel selectContactViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_contact);
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
-        firebaseFirestore = FirebaseFirestore.getInstance();
 
         TextView debug = findViewById(R.id.debug_contact);
         progressBar = findViewById(R.id.progress_bar_select_contact);
         contactRecyclerView = findViewById(R.id.recycler_view_contact);
 
+        selectContactViewModel = new ViewModelProvider(this).get(SelectContactViewModel.class);
+
         if(getSupportActionBar() != null){
             getSupportActionBar().setTitle("Select Contact");
-            getSupportActionBar().setSubtitle("Getting contact...");
+            getSupportActionBar().setSubtitle(null);
         }
 
         progressBar.setVisibility(View.GONE);
 
+        selectContactViewModel.getNumberContact().observe(SelectContactActivity.this, numberContact -> {
+            if(numberContact != null){
+                getSupportActionBar().setSubtitle(Integer.toString(numberContact) + " contact");
+            }
+        });
 
-        //RECYCLER VIEW
-        databaseListener.checkIsUserLoggedIn();
-        databaseListener.getLoggedUser().observe(SelectContactActivity.this, currentUser -> {
+        updateContactList();
 
-            if(currentUser != null){
+        selectContactViewModel.getSelectContactModel().observe(SelectContactActivity.this, contacts -> {
+            contactAdapter.notifyDataSetChanged();
+            updateContactList();
+        });
 
-                databaseListener.getUserContacts(currentUser.getUid());
-                databaseListener.getContactsList().observe(SelectContactActivity.this, contacts -> {
-
-                    if(contacts != null && contacts.size() > 0){
-
-                        //Change sub title to contacts size
-                        String textContact;
-                        if(contacts.size() <= 1){
-                            textContact = contacts.size() + " contact";
-                        } else {
-                            textContact = contacts.size() + " contacts";
-                        }
-
-                        if(getSupportActionBar() != null){
-                            getSupportActionBar().setSubtitle(textContact);
-                        }
-
-                        updateContactList(contacts);
-                    } else {
-                        //DISPLAY CONTACT NOT FOUND
-                    }
-
-                }); //End getContactsList
-
-            } //End if
-
-        }); //End getLoggedUser
+        selectContactViewModel.getContactList();
 
 
     } // End onCreate
@@ -102,17 +81,15 @@ public class SelectContactActivity extends AppCompatActivity {
         MenuItem search_menu =  menu.findItem(R.id.menu_select_contact_search);
         SearchView searchView = (SearchView) search_menu.getActionView();
 
-        if(databaseListener.getKeyword().getValue() != null){
-            searchView.setQuery(databaseListener.getKeyword().getValue(), false);
+        if(selectContactViewModel.getKeyword().getValue() != null){
+            searchView.setQuery(selectContactViewModel.getKeyword().getValue(), false);
             searchView.setIconified(false);
         }
-
-        updateContactListBySearch();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                Toast.makeText(SelectContactActivity.this, query, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SelectContactActivity.this, query, Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -120,10 +97,8 @@ public class SelectContactActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
 
                 if(newText != null){
-                    databaseListener.setKeyword(newText);
+                    selectContactViewModel.setKeyword(newText);
                 }
-
-                updateContactListBySearch();
 
                 return false;
             }
@@ -147,28 +122,13 @@ public class SelectContactActivity extends AppCompatActivity {
     }
 
 
-    public void updateContactList(List<SelectContactModel> modalContactList){
-
-        contactAdapter = new SelectContactAdapter(SelectContactActivity.this, modalContactList);
+    public void updateContactList(){
+        contactAdapter = new SelectContactAdapter(SelectContactActivity.this,
+                selectContactViewModel.getSelectContactModel().getValue());
         contactRecyclerView.setAdapter(contactAdapter);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
     }
 
 
-    public void updateContactListBySearch(){
-        databaseListener.getContactsList().observe(SelectContactActivity.this, contacts -> {
-            if(contacts != null){
-                databaseListener.getKeyword().observe(SelectContactActivity.this, keyword -> {
-                    if(keyword != null){
-                        updateContactList(contacts.stream()
-                                .filter(data -> data.usernameProfileContact.toLowerCase().contains(keyword.toLowerCase()))
-                                .map(data -> new SelectContactModel(data.type, data.idProfile, data.photoProfileContact, data.usernameProfileContact, data.desctiptionProfileContact))
-                                .collect(Collectors.toList()));
-
-                    }
-                });
-            }
-        });
-    }
 
 }

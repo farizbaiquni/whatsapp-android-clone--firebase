@@ -59,7 +59,7 @@
                 app:errorEnabled="true"
                 android:hint="Password"
                 app:boxStrokeColor="@color/colorWhatsAppDarkGreen"
-                app:endIconMode="clear_text"
+                app:endIconMode="password_toggle"
                 android:layout_marginHorizontal="20dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
@@ -143,7 +143,7 @@
         android:layout_height="match_parent"
         android:alpha="0.2"
         android:backgroundTint="#000000"
-        android:visibility="visible"
+        android:visibility="gone"
         />
 
     <ProgressBar
