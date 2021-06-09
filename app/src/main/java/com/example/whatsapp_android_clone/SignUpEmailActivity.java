@@ -191,7 +191,7 @@ public class SignUpEmailActivity extends AppCompatActivity {
                                             user.put("uid",currentUser.getUid());
                                             user.put("id", signUpViewModel.getSignUpModel().getValue().getEmail());
                                             user.put("username", currentUser.getDisplayName());
-                                            user.put("description", "");
+                                            user.put("description", "Hey there! Iam using WhatsApp");
                                             user.put("email", currentUser.getEmail());
                                             user.put("phone", "" );
                                             user.put("photoProfile", "");

@@ -118,7 +118,7 @@ public class AddContactActivity extends AppCompatActivity {
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", addContactViewModel.getAddContactModel().getValue().getId());
-                data.put("contactName", addContactViewModel.getAddContactModel().getValue().getContactName());
+                data.put("contactName", editTextNameContact.getText().toString());
 
                 firebaseFirestore.collection("users")
                         .document(currentUser.getUid())
@@ -166,9 +166,11 @@ public class AddContactActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) searchMenu.getActionView();
         searchView.setQueryHint("Id");
 
-        if(addContactViewModel.getKeyword() != null){
-            searchView.setQuery(addContactViewModel.getKeyword().getValue(), false);
-            searchView.setIconified(false);
+        if(addContactViewModel.getKeyword().getValue() != null){
+            if(!addContactViewModel.getKeyword().getValue().isEmpty()){
+                searchView.setQuery(addContactViewModel.getKeyword().getValue(), false);
+                searchView.setIconified(false);
+            }
         }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -212,6 +214,11 @@ public class AddContactActivity extends AppCompatActivity {
                                 //CHECK IS USER NOT EQUAL LOGGED USER
                                 if(!document.getId().equals(currentUser.getUid())){
                                     isUserFound = true;
+                                    idSearchedUser = document.getId().toString();
+                                    photoSearchedUser = Objects.requireNonNull(document.getData().get("photoProfile")).toString();
+                                    emailSearchedUser = Objects.requireNonNull(document.getData().get("email")).toString();
+                                    usernameSearchedUser = Objects.requireNonNull(document.getData().get("username")).toString();
+                                    descriptionSearchedUser = Objects.requireNonNull(document.getData().get("description")).toString();
 
                                     //CHECK IS USER ALREADY EXIST IN CONTACT
                                     firebaseFirestore.collection("users")
@@ -228,13 +235,6 @@ public class AddContactActivity extends AppCompatActivity {
                                                     textViewError.setText("This account is already exist in your contact");
 
                                                 } else {
-
-                                                    idSearchedUser = document.getId().toString();
-                                                    photoSearchedUser = Objects.requireNonNull(document.getData().get("photoProfile")).toString();
-                                                    emailSearchedUser = Objects.requireNonNull(document.getData().get("email")).toString();
-                                                    usernameSearchedUser = Objects.requireNonNull(document.getData().get("username")).toString();
-                                                    descriptionSearchedUser = Objects.requireNonNull(document.getData().get("description")).toString();
-
 
                                                     addContactViewModel.setAddContactModel(
                                                             new AddContactModel(

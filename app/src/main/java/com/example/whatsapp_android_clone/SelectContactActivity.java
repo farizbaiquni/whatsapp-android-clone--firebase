@@ -22,6 +22,7 @@ import com.example.whatsapp_android_clone.model.SelectContactModel;
 import com.example.whatsapp_android_clone.viewModel.SelectContactViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,18 +54,33 @@ public class SelectContactActivity extends AppCompatActivity {
 
         selectContactViewModel.getNumberContact().observe(SelectContactActivity.this, numberContact -> {
             if(numberContact != null){
-                getSupportActionBar().setSubtitle(Integer.toString(numberContact) + " contact");
+                if(numberContact > 1){
+                    getSupportActionBar().setSubtitle(Integer.toString(numberContact) + " contacts");
+                } else if(numberContact >= 0 && numberContact <= 1){
+                    getSupportActionBar().setSubtitle(Integer.toString(numberContact) + " contact");
+                } else if(numberContact == -1){
+                    getSupportActionBar().setSubtitle("Getting contacts...");
+                } else {
+                    getSupportActionBar().setSubtitle("Failed getting contacts...");
+                }
             }
         });
 
         updateContactList();
 
+        selectContactViewModel.getContactList();
         selectContactViewModel.getSelectContactModel().observe(SelectContactActivity.this, contacts -> {
             contactAdapter.notifyDataSetChanged();
-            updateContactList();
+            if(selectContactViewModel.getKeyword().getValue() != null){
+                if(!selectContactViewModel.getKeyword().getValue().isEmpty()){
+                    updateContactListBySearch(selectContactViewModel.getKeyword().getValue());
+                }
+            }else{
+                updateContactList();
+            }
+
         });
 
-        selectContactViewModel.getContactList();
 
 
     } // End onCreate
@@ -82,8 +98,10 @@ public class SelectContactActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) search_menu.getActionView();
 
         if(selectContactViewModel.getKeyword().getValue() != null){
-            searchView.setQuery(selectContactViewModel.getKeyword().getValue(), false);
-            searchView.setIconified(false);
+            if(!selectContactViewModel.getKeyword().getValue().isEmpty()){
+                searchView.setQuery(selectContactViewModel.getKeyword().getValue(), false);
+                searchView.setIconified(false);
+            }
         }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -98,6 +116,8 @@ public class SelectContactActivity extends AppCompatActivity {
 
                 if(newText != null){
                     selectContactViewModel.setKeyword(newText);
+                    updateContactListBySearch(newText);
+
                 }
 
                 return false;
@@ -127,6 +147,28 @@ public class SelectContactActivity extends AppCompatActivity {
                 selectContactViewModel.getSelectContactModel().getValue());
         contactRecyclerView.setAdapter(contactAdapter);
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
+    }
+
+    public void updateContactListBySearch(String keyword){
+        List<SelectContactModel> tempModelSearch = new ArrayList<>(selectContactViewModel.getSelectContactModel().getValue());
+
+        if(keyword.isEmpty()){
+            tempModelSearch = selectContactViewModel.getSelectContactModel().getValue().stream()
+                    .filter(data -> data.getUsernameProfileContact().toLowerCase().contains(keyword.toLowerCase()))
+                    .collect(Collectors.toList());
+        }else{
+            tempModelSearch = selectContactViewModel.getSelectContactModel().getValue().stream()
+                    .filter(data -> data.getUsernameProfileContact().toLowerCase().contains(keyword.toLowerCase()) && data.getType() != 0)
+                    .collect(Collectors.toList());
+        }
+
+        selectContactViewModel.setContactsSearch(tempModelSearch);
+
+        contactAdapter = new SelectContactAdapter(SelectContactActivity.this,
+                selectContactViewModel.getContactsSearch().getValue());
+        contactRecyclerView.setAdapter(contactAdapter);
+        contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
+
     }
 
 

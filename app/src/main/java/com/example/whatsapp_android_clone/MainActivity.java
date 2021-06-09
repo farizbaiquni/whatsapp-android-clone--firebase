@@ -18,6 +18,11 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,6 +104,16 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser == null){
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+        } else {
+            FirebaseDatabase database = FirebaseDatabase.getInstance("https://whatsapp-clone-android-a9652-default-rtdb.asia-southeast1.firebasedatabase.app/");
+            DatabaseReference statusLastOnline = database.getReference("users").child(currentUser.getUid()).child("lastOnline");
+            DatabaseReference statusOnlineRef = database.getReference("users").child(currentUser.getUid()).child("statusOnline");
+
+            statusOnlineRef.setValue("online");
+
+            statusOnlineRef.onDisconnect().setValue("offline");
+            statusLastOnline.onDisconnect().setValue(LocalDateTime.now());
+
         }
     }
 

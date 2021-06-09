@@ -29,13 +29,20 @@ public class SelectContactViewModel extends ViewModel {
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private FirebaseUser loggedUser = FirebaseAuth.getInstance().getCurrentUser();
 
+    private MutableLiveData<List<SelectContactModel>> contactsSearch =  new MutableLiveData<>();
+    public LiveData<List<SelectContactModel>> getContactsSearch(){
+        return this.contactsSearch;
+    };
+    public void setContactsSearch(List<SelectContactModel> model){
+        contactsSearch.setValue(model);
+    }
 
     private MutableLiveData<Boolean> isConnectingDatabase = new MutableLiveData<>(false);
     public LiveData<Boolean> getIsConnectingDatabase(){
         return this.isConnectingDatabase;
     }
 
-    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
+    private MutableLiveData<String> keyword = new MutableLiveData<>();
     public LiveData<String> getKeyword(){ return keyword; }
     public void setKeyword(String key){ this.keyword.setValue(key);}
 
@@ -75,6 +82,8 @@ public class SelectContactViewModel extends ViewModel {
 
     public void getContactList(){
 
+        numberContact.setValue(-1);
+
         firebaseFirestore.collection("users")
                 .document(loggedUser.getUid())
                 .collection("contacts")
@@ -82,6 +91,7 @@ public class SelectContactViewModel extends ViewModel {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
+                            numberContact.setValue(-2);
                             //Log.w(TAG, "Listen failed.", e);
                             return;
                         }
@@ -104,10 +114,7 @@ public class SelectContactViewModel extends ViewModel {
                             tempContacts.add(contact);
                         }
 
-
                         if(!tempContacts.isEmpty()) {
-
-                            Log.d("IS TEMP CONTACTS EMPT", "NOOOOO");
 
                             numberContact.setValue(tempContacts.size());
 
@@ -116,8 +123,6 @@ public class SelectContactViewModel extends ViewModel {
                                 tempContactsId.add(tempContacts.get(index).get(0));
                                 index++;
                             }
-
-                            Log.d("CONTACTS ID", tempContactsId.toString());
 
                             firebaseFirestore.collection("users")
                                     .whereIn("uid", tempContactsId)
@@ -155,7 +160,7 @@ public class SelectContactViewModel extends ViewModel {
                                                     i++;
                                                 }
 
-//                                                selectContactModel.setValue(tempModel);
+                                                selectContactModel.setValue(tempModel);
 
                                             } else {
                                                 //Error getting documents
@@ -166,28 +171,6 @@ public class SelectContactViewModel extends ViewModel {
                         //Contacts empty
                         } else {
                             numberContact.setValue(0);
-
-                            List<SelectContactModel> tempModel = new ArrayList<>();
-
-                            tempModel.add(new SelectContactModel(
-                                    0, //type
-                                    "", //id
-                                    "", //photo
-                                    "New Group", //username or contactName
-                                    "" //description
-                            ));
-
-                            tempModel.add(new SelectContactModel(
-                                    0, //type
-                                    "", //id
-                                    "", //photo
-                                    "New Contact", //username or contactName
-                                    "" //description
-                            ));
-
-                            selectContactModel.setValue(tempModel);
-
-
                         } // End if check is tempContacts empty
 
 
