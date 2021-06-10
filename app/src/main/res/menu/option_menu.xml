@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_new_group"
         android:title="New group"/>
     <item android:id="@+id/menu_setting"
         android:title="Setting"/>
     <item android:id="@+id/menu_logout"
         android:title="Logout"/>
+
+    <item android:id="@+id/search"
+        android:title=""
+        android:icon="@drawable/ic_search_24"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView" />
+
 </menu>

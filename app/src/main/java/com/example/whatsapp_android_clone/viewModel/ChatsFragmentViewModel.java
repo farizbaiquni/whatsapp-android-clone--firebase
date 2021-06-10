@@ -9,12 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.whatsapp_android_clone.model.ChatsFragmentModel;
-import com.example.whatsapp_android_clone.model.SelectContactModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,15 +21,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ChatsFragmentViewModel extends ViewModel {
 
-    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -44,14 +40,14 @@ public class ChatsFragmentViewModel extends ViewModel {
     }
 
 
-    private MutableLiveData<List<List<ChatsFragmentModel>>> chatsProfileList = new MutableLiveData<>();
-    public LiveData<List<List<ChatsFragmentModel>>> getChatsProfileList(){
+    private MutableLiveData<List<ChatsFragmentModel>> chatsProfileList = new MutableLiveData<>();
+    public LiveData<List<ChatsFragmentModel>> getChatsProfileList(){
         return this.chatsProfileList;
     }
 
 
-    private MutableLiveData<Map> roomsList =  new MutableLiveData<>();
-    public LiveData<Map> getRoomsList(){
+    private MutableLiveData<Map<String, String>> roomsList =  new MutableLiveData<>();
+    public LiveData<Map<String, String>> getRoomsList(){
         return this.roomsList;
     }
 
@@ -64,11 +60,6 @@ public class ChatsFragmentViewModel extends ViewModel {
     public void setKeyword(String key){
         this.keyword.setValue(key);
     }
-
-
-    //Get id_room array ---> Listener
-    //Get room based on id_room array ---> Listener
-    //Loop each fetch and assign to tempChatsList
 
     public void gettingRoomsList(){
         firebaseFirestore.collection("users").document(currentUser.getUid())
@@ -83,8 +74,9 @@ public class ChatsFragmentViewModel extends ViewModel {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    roomsList.setValue((Map)snapshot.getData().get("roomsMap"));
-                    //Log.d("ROOMS MAP ", roomsList.getValue().toString());
+                    if(snapshot.getData().get("roomsMap") != null){
+                        roomsList.setValue((Map)snapshot.getData().get("roomsMap"));
+                    }
 
                 } else {
                     //Log.d(TAG, "Current data: null");
@@ -97,8 +89,6 @@ public class ChatsFragmentViewModel extends ViewModel {
 
 
     public void gettingChatsList(Map<String, String> rooms){
-
-        //Log.d("LIST ", rooms.toString());
 
         List allRoomsPersonalList = new ArrayList();
         List allRoomsList = new ArrayList();
@@ -114,8 +104,6 @@ public class ChatsFragmentViewModel extends ViewModel {
 
         }
 
-        //Log.d("PERSONAL ", allRoomsPersonalList.toString());
-
         Map<String, String> allUserNameChatsMap = new HashMap<>();
         Map<String, String> allUserPhotoProfileChatsMap = new HashMap<>();
 
@@ -127,10 +115,7 @@ public class ChatsFragmentViewModel extends ViewModel {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //Log.d("ROOM ", document.getData().toString());
-                                //Filter except currentUser
                                 if(!document.getData().get("uid").toString().contains(currentUser.getUid())){
-//                                    Log.d("DOCUMENT ", document.getData().toString());
                                     allUserNameChatsMap.put(document.getData().get("uid").toString(), document.getData().get("username").toString());
                                     allUserPhotoProfileChatsMap.put(document.getData().get("uid").toString(),
                                             document.getData().get("photoProfile").toString());
@@ -141,7 +126,6 @@ public class ChatsFragmentViewModel extends ViewModel {
                         }
 
                         if(task.isComplete()){
-                            //Log.d("USER-USERNAME ", userUsernameList.toString());
                             firebaseFirestore.collection("users")
                                     .document(currentUser.getUid())
                                     .collection("contacts")
@@ -165,7 +149,7 @@ public class ChatsFragmentViewModel extends ViewModel {
 
                                             if(task.isComplete()){
                                                 //Log.d("FINAL ALL USERNAME ", allUserNameChatsMap.toString());
-                                                gettingRoomsById(allRoomsList, allUserNameChatsMap, allUserPhotoProfileChatsMap);
+                                                gettingAllDataRooms(allRoomsList, allUserNameChatsMap, allUserPhotoProfileChatsMap);
 
                                             }
                                         }
@@ -177,12 +161,9 @@ public class ChatsFragmentViewModel extends ViewModel {
     }
 
 
-    private void gettingRoomsById(List rooms, Map allUserNameChats, Map allUserPhotoProfileChats){
+    private void gettingAllDataRooms(List<String> rooms, Map<String, String> allUserNameChats, Map<String, String> allUserPhotoProfileChats){
 
-        Log.d("USERNAME ", allUserNameChats.toString());
-
-        List<ChatsFragmentModel> tempSingleModel = new ArrayList<>();
-        List<List<ChatsFragmentModel>> tempAllModel = new ArrayList<>();
+        List<ChatsFragmentModel> tempAllModel = new ArrayList<>();
 
         firebaseFirestore.collection("rooms")
                 .whereIn("idRoom", (List) rooms)
@@ -198,31 +179,21 @@ public class ChatsFragmentViewModel extends ViewModel {
                                     List<List> tempMember = new ArrayList<>();
                                     tempMember.add((List)document.getData().get("member"));
                                     tempMember.get(0).remove(currentUser.getUid());
-//                                    Log.d("MEMBER ", tempMember.get(0).toString());
 
                                     String id = tempMember.get(0).get(0).toString();
-//                                    String photoProfile = allUserPhotoProfileChats.get(id).toString();
-//                                    String username = allUserNameChats.get(id).toString();
-//                                    Log.d("ID ", id);
-//                                    Log.d("PHOTO PROFILE ", Boolean.toString(photoProfile.isEmpty()));
-//                                    Log.d("USERNAME ", username);
-//                                    Log.d("MESSAGE ", ((Map)document.getData().get("lastMessage")).get("message").toString());
-//                                    Log.d("DATE ", ((Map)document.getData().get("lastMessage")).get("date").toString());
 
-
-                                    tempSingleModel.add(new ChatsFragmentModel(
+                                    tempAllModel.add(new ChatsFragmentModel(
                                             allUserPhotoProfileChats.get(id).toString(), //Photo
                                             allUserNameChats.get(id).toString(), //Username
                                             ((Map)document.getData().get("lastMessage")).get("message").toString(),//lastMessage
                                             ((Map)document.getData().get("lastMessage")).get("date").toString(), //lastMessageDate
                                             "0"
                                     ));
-
                                 }
 
                             }
 
-                            tempAllModel.add(tempSingleModel);
+                            searchChatsProfileList.setValue(tempAllModel);
                             chatsProfileList.setValue(tempAllModel);
 
                         } else {

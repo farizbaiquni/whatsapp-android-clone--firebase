@@ -15,8 +15,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.whatsapp_android_clone.adapter.ChatsFragmentAdapter;
+import com.example.whatsapp_android_clone.model.ChatsFragmentModel;
 import com.example.whatsapp_android_clone.viewModel.ChatsFragmentViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChatsFragment extends Fragment {
 
@@ -52,7 +57,7 @@ public class ChatsFragment extends Fragment {
         fab_select_contact = view.findViewById(R.id.fab_select_contact);
         recyclerView = view.findViewById(R.id.recycler_view_chats);
 
-        chatsFragmentViewModel = new ViewModelProvider(this).get(ChatsFragmentViewModel.class);
+        chatsFragmentViewModel = new ViewModelProvider(getActivity()).get(ChatsFragmentViewModel.class);
 
         chatsFragmentViewModel.gettingRoomsList();
         chatsFragmentViewModel.getRoomsList().observe(getActivity(), rooms -> {
@@ -62,11 +67,28 @@ public class ChatsFragment extends Fragment {
         });
 
         chatsFragmentViewModel.getChatsProfileList().observe(getActivity(), chats -> {
-            if(!chats.isEmpty() && chats != null){
+            if(chats != null && !chats.isEmpty()){
+
                 chatsFragmentAdapter = new ChatsFragmentAdapter(chats);
                 recyclerView.setAdapter(chatsFragmentAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+                chatsFragmentViewModel.getKeyword().observe(getActivity(), keyword -> {
+                    if (keyword != null && !keyword.isEmpty()){
+                        List<ChatsFragmentModel> tempSearchModel = new ArrayList<>();
+                        tempSearchModel = chats.stream().filter(data -> data.getUsername().toLowerCase()
+                                .contains(keyword.toLowerCase()))
+                                .collect(Collectors.toList());
+
+                        chatsFragmentViewModel.setSearchChatsProfileList(tempSearchModel);
+
+                        chatsFragmentAdapter = new ChatsFragmentAdapter(chatsFragmentViewModel
+                                .getSearchChatsProfileList().getValue());
+                        recyclerView.setAdapter(chatsFragmentAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                    }
+                });
             }
         });
 
@@ -77,4 +99,5 @@ public class ChatsFragment extends Fragment {
 
         return view;
     }
+
 }

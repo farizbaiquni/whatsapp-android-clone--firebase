@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -15,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.whatsapp_android_clone.viewModel.ChatsFragmentViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TabsAdapter tabsAdapter;
     private DatabaseListener databaseListener;
+    private ChatsFragmentViewModel chatsFragmentViewModel;
 
 
     @Override
@@ -46,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        chatsFragmentViewModel = new ViewModelProvider(this).get(ChatsFragmentViewModel.class);
         databaseListener = new ViewModelProvider(this).get(DatabaseListener.class);
+
         //Check is user loggeed in or not, to avoid null exception
         databaseListener.checkIsUserLoggedIn();
         databaseListener.getLoggedUser().observe(MainActivity.this, loggedUser -> {
@@ -125,6 +131,38 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.option_menu, menu);
+
+        MenuItem searchMenu = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchMenu.getActionView();
+        searchView.setQueryHint("Search...");
+
+        if(chatsFragmentViewModel.getKeyword().getValue() != null &&
+                !chatsFragmentViewModel.getKeyword().getValue().isEmpty()){
+            searchView.setQuery(chatsFragmentViewModel.getKeyword().getValue(), false);
+            searchView.setIconified(false);
+        }
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                chatsFragmentViewModel.setKeyword(newText);
+//                Toast.makeText(MainActivity.this, chatsFragmentViewModel.getKeyword().getValue(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
         return true;
     }
 

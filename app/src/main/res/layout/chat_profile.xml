@@ -39,6 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLength="30"
+                    android:minWidth="220dp"
                     android:text="Assalamualaikum Warahmatullahi wabaratu, Perkenalkan "/>
 
             </LinearLayout>
