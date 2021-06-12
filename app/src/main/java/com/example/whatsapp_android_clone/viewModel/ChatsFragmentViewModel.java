@@ -31,15 +31,6 @@ public class ChatsFragmentViewModel extends ViewModel {
     private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-    private MutableLiveData<List<ChatsFragmentModel>> searchChatsProfileList = new MutableLiveData<>();
-    public LiveData<List<ChatsFragmentModel>> getSearchChatsProfileList(){
-        return this.searchChatsProfileList;
-    }
-    public void setSearchChatsProfileList(List<ChatsFragmentModel> model){
-        this.searchChatsProfileList.setValue(model);
-    }
-
-
     private MutableLiveData<List<ChatsFragmentModel>> chatsProfileList = new MutableLiveData<>();
     public LiveData<List<ChatsFragmentModel>> getChatsProfileList(){
         return this.chatsProfileList;
@@ -52,7 +43,7 @@ public class ChatsFragmentViewModel extends ViewModel {
     }
 
 
-    private MutableLiveData<String> keyword = new MutableLiveData<>();
+    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
     public LiveData<String> getKeyword(){
         return this.keyword;
     }
@@ -193,7 +184,6 @@ public class ChatsFragmentViewModel extends ViewModel {
 
                             }
 
-                            searchChatsProfileList.setValue(tempAllModel);
                             chatsProfileList.setValue(tempAllModel);
 
                         } else {

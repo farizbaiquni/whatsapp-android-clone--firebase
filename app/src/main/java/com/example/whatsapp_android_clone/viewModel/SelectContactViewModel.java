@@ -29,20 +29,12 @@ public class SelectContactViewModel extends ViewModel {
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private FirebaseUser loggedUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    private MutableLiveData<List<SelectContactModel>> contactsSearch =  new MutableLiveData<>();
-    public LiveData<List<SelectContactModel>> getContactsSearch(){
-        return this.contactsSearch;
-    };
-    public void setContactsSearch(List<SelectContactModel> model){
-        contactsSearch.setValue(model);
-    }
-
     private MutableLiveData<Boolean> isConnectingDatabase = new MutableLiveData<>(false);
     public LiveData<Boolean> getIsConnectingDatabase(){
         return this.isConnectingDatabase;
     }
 
-    private MutableLiveData<String> keyword = new MutableLiveData<>();
+    private MutableLiveData<String> keyword = new MutableLiveData<>(null);
     public LiveData<String> getKeyword(){ return keyword; }
     public void setKeyword(String key){ this.keyword.setValue(key);}
 

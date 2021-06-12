@@ -68,29 +68,24 @@ public class ChatsFragment extends Fragment {
 
         chatsFragmentViewModel.getChatsProfileList().observe(getActivity(), chats -> {
             if(chats != null && !chats.isEmpty()){
-
-                chatsFragmentAdapter = new ChatsFragmentAdapter(chats);
-                recyclerView.setAdapter(chatsFragmentAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
                 chatsFragmentViewModel.getKeyword().observe(getActivity(), keyword -> {
                     if (keyword != null && !keyword.isEmpty()){
-                        List<ChatsFragmentModel> tempSearchModel = new ArrayList<>();
-                        tempSearchModel = chats.stream().filter(data -> data.getUsername().toLowerCase()
+                        chatsFragmentAdapter = new ChatsFragmentAdapter(chats.stream()
+                                .filter(data -> data.getUsername().toLowerCase()
                                 .contains(keyword.toLowerCase()))
-                                .collect(Collectors.toList());
-
-                        chatsFragmentViewModel.setSearchChatsProfileList(tempSearchModel);
-
-                        chatsFragmentAdapter = new ChatsFragmentAdapter(chatsFragmentViewModel
-                                .getSearchChatsProfileList().getValue());
+                                .collect(Collectors.toList()));
                         recyclerView.setAdapter(chatsFragmentAdapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+                    } else {
+                        chatsFragmentAdapter = new ChatsFragmentAdapter(chats);
+                        recyclerView.setAdapter(chatsFragmentAdapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     }
                 });
             }
         });
+
 
         fab_select_contact.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SelectContactActivity.class);

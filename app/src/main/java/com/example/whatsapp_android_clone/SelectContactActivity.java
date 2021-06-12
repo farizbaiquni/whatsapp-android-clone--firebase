@@ -71,12 +71,21 @@ public class SelectContactActivity extends AppCompatActivity {
         selectContactViewModel.getContactList();
         selectContactViewModel.getSelectContactModel().observe(SelectContactActivity.this, contacts -> {
             contactAdapter.notifyDataSetChanged();
-            if(selectContactViewModel.getKeyword().getValue() != null){
-                if(!selectContactViewModel.getKeyword().getValue().isEmpty()){
-                    updateContactListBySearch(selectContactViewModel.getKeyword().getValue());
-                }
-            }else{
-                updateContactList();
+
+            if(contacts != null && !contacts.isEmpty()){
+                selectContactViewModel.getKeyword().observe(SelectContactActivity.this, keyword -> {
+                    if(keyword != null && !keyword.isEmpty()){
+                        contactAdapter = new SelectContactAdapter(SelectContactActivity.this,
+                                contacts.stream()
+                                        .filter(data -> data.getUsernameProfileContact().toLowerCase()
+                                                .contains(keyword.toLowerCase()) && data.getType() != 0)
+                                        .collect(Collectors.toList()));
+                        contactRecyclerView.setAdapter(contactAdapter);
+                        contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
+                    } else {
+                        updateContactList();
+                    }
+                });
             }
 
         });
@@ -116,7 +125,6 @@ public class SelectContactActivity extends AppCompatActivity {
 
                 if(newText != null){
                     selectContactViewModel.setKeyword(newText);
-                    updateContactListBySearch(newText);
 
                 }
 
@@ -149,27 +157,6 @@ public class SelectContactActivity extends AppCompatActivity {
         contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
     }
 
-    public void updateContactListBySearch(String keyword){
-        List<SelectContactModel> tempModelSearch = new ArrayList<>(selectContactViewModel.getSelectContactModel().getValue());
-
-        if(keyword.isEmpty()){
-            tempModelSearch = selectContactViewModel.getSelectContactModel().getValue().stream()
-                    .filter(data -> data.getUsernameProfileContact().toLowerCase().contains(keyword.toLowerCase()))
-                    .collect(Collectors.toList());
-        }else{
-            tempModelSearch = selectContactViewModel.getSelectContactModel().getValue().stream()
-                    .filter(data -> data.getUsernameProfileContact().toLowerCase().contains(keyword.toLowerCase()) && data.getType() != 0)
-                    .collect(Collectors.toList());
-        }
-
-        selectContactViewModel.setContactsSearch(tempModelSearch);
-
-        contactAdapter = new SelectContactAdapter(SelectContactActivity.this,
-                selectContactViewModel.getContactsSearch().getValue());
-        contactRecyclerView.setAdapter(contactAdapter);
-        contactRecyclerView.setLayoutManager(new LinearLayoutManager(SelectContactActivity.this));
-
-    }
 
 
 
