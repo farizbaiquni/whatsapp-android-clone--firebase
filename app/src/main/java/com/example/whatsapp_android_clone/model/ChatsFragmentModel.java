@@ -2,10 +2,11 @@ package com.example.whatsapp_android_clone.model;
 
 public class ChatsFragmentModel {
 
-    String photoProfileUrl, username, lastMesaage, numberUnreadMessage, lastMessageDate;
+    String idRoom, photoProfileUrl, username, lastMesaage, numberUnreadMessage, lastMessageDate;
 
-    public ChatsFragmentModel(String photoProfileUrl, String username, String lastMesaage,
+    public ChatsFragmentModel(String idRoom, String photoProfileUrl, String username, String lastMesaage,
                               String numberUnreadMessage, String lastMessageDate) {
+        this.idRoom = idRoom;
         this.photoProfileUrl = photoProfileUrl;
         this.username = username;
         this.lastMesaage = lastMesaage;
@@ -21,9 +22,15 @@ public class ChatsFragmentModel {
         this.photoProfileUrl = photoProfileUrl;
     }
 
-    public String getUsername() {
-        return username;
+    public String getIdRoom() {
+        return idRoom;
     }
+
+    public void setIdRoom(String idRoom) {
+        this.idRoom = idRoom;
+    }
+
+    public String getUsername() { return username; }
 
     public void setUsername(String username) {
         this.username = username;

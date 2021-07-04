@@ -1,5 +1,7 @@
 package com.example.whatsapp_android_clone.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.whatsapp_android_clone.PersonalChatActivity;
 import com.example.whatsapp_android_clone.R;
 import com.example.whatsapp_android_clone.model.ChatsFragmentModel;
 import com.squareup.picasso.Picasso;
@@ -21,9 +24,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatsFragmentAdapter extends RecyclerView.Adapter<ChatsFragmentAdapter.ChatsViewHolder> {
 
     List<ChatsFragmentModel> chatsModelList = new ArrayList<>();
+    Context context;
 
-    public ChatsFragmentAdapter(List<ChatsFragmentModel> model) {
+    public ChatsFragmentAdapter(Context ctx, List<ChatsFragmentModel> model) {
         this.chatsModelList = model;
+        this.context = ctx;
     }
 
     @NonNull
@@ -44,6 +49,14 @@ public class ChatsFragmentAdapter extends RecyclerView.Adapter<ChatsFragmentAdap
         }
         holder.username.setText(chatsModelList.get(position).getUsername());
         holder.lastMessage.setText(chatsModelList.get(position).getLastMesaage());
+        holder.cardViewChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PersonalChatActivity.class);
+                intent.putExtra("idRoom", chatsModelList.get(position).getIdRoom());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

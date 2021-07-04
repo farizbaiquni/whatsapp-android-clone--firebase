@@ -18,14 +18,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddContactActivity"
+        <activity
+            android:name=".PersonalChatActivity"/>
+        <activity
+            android:name=".AddContactActivity"
             android:parentActivityName=".SelectContactActivity"
-            android:theme="@style/AppThemeWhatsApp">
-        </activity>
+            android:theme="@style/AppThemeWhatsApp"/>
         <activity
             android:name=".SelectContactActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppThemeWhatsApp"></activity>
+            android:theme="@style/AppThemeWhatsApp" />
         <activity
             android:name=".EditProfileActivity"
             android:parentActivityName=".SettingActivity"
