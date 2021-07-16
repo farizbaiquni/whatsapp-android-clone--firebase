@@ -69,6 +69,7 @@ public class SettingMenuAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        //Log.d("INDEX MENU ", Integer.toString(position));
         final SettingMenuModel object = settingMenuModels.get(position);
         if(object != null){
             switch (object.type){

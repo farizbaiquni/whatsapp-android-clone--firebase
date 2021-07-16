@@ -10,6 +10,7 @@
 
     <!--    Toolbar-->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout_personal_chat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -86,6 +87,12 @@
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_personal_chats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/app_bar_layout_personal_chat"/>
 
 
     <!--    Post Message-->

@@ -54,6 +54,7 @@ public class ChatsFragmentAdapter extends RecyclerView.Adapter<ChatsFragmentAdap
             public void onClick(View v) {
                 Intent intent = new Intent(context, PersonalChatActivity.class);
                 intent.putExtra("idRoom", chatsModelList.get(position).getIdRoom());
+                intent.putExtra("opponentUsername", chatsModelList.get(position).getUsername());
                 context.startActivity(intent);
             }
         });
